@@ -68,6 +68,7 @@
               <h5>Elsewhere</h5>
               <ul>
                 <li><a href="https://github.com/Governor6191" target="_blank" rel="noopener">GitHub &nearr;</a></li>
+                <li><a href="https://www.linkedin.com/in/mensah-sylvester-arhin-62a2b6242/" target="_blank" rel="noopener">LinkedIn &nearr;</a></li>
                 <li><a href="https://www.math.msstate.edu/" target="_blank" rel="noopener">MSU Math &amp; Stats &nearr;</a></li>
                 <li><a href="cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF) &nearr;</a></li>
               </ul>
