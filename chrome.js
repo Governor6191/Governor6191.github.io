@@ -3,18 +3,18 @@
 
 (function () {
   const NAV = [
-    { key: 'home',     label: 'Home',     href: 'index.html' },
-    { key: 'research', label: 'Research', href: 'research.html' },
-    { key: 'teaching', label: 'Teaching', href: 'teaching.html' },
-    { key: 'cv',       label: 'CV',       href: 'cv/sylvester-arhin-mensah-cv.pdf', external: true },
-    { key: 'contact',  label: 'Contact',  href: 'contact.html' },
+    { key: 'home',     label: 'Home',     href: '/' },
+    { key: 'research', label: 'Research', href: '/research.html' },
+    { key: 'teaching', label: 'Teaching', href: '/teaching.html' },
+    { key: 'cv',       label: 'CV',       href: '/cv/sylvester-arhin-mensah-cv.pdf', external: true },
+    { key: 'contact',  label: 'Contact',  href: '/contact.html' },
   ];
 
   function renderNav(active) {
     return `
       <nav class="site-nav">
         <div class="site-nav-inner">
-          <a class="brand" href="index.html">
+          <a class="brand" href="/">
             <span class="brand-mark">S</span>
             <span class="brand-name">Sylvester Arhin <em>Mensah</em></span>
           </a>
@@ -31,7 +31,7 @@
               return `<a href="${n.href}" ${attrs.join(' ')}>${n.label}${n.external ? ' &nearr;' : ''}</a>`;
             }).join('')}
           </div>
-          <a class="nav-cta" href="contact.html">
+          <a class="nav-cta" href="/contact.html">
             <span class="dot"></span>
             <span class="cta-label">Available for SU '26</span>
           </a>
@@ -58,10 +58,10 @@
             <div>
               <h5>Site</h5>
               <ul>
-                <li><a href="research.html">Research</a></li>
-                <li><a href="teaching.html">Teaching</a></li>
-                <li><a href="cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF) &nearr;</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <li><a href="/research.html">Research</a></li>
+                <li><a href="/teaching.html">Teaching</a></li>
+                <li><a href="/cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF) &nearr;</a></li>
+                <li><a href="/contact.html">Contact</a></li>
               </ul>
             </div>
             <div>
@@ -70,7 +70,7 @@
                 <li><a href="https://github.com/Governor6191" target="_blank" rel="noopener">GitHub &nearr;</a></li>
                 <li><a href="https://www.linkedin.com/in/mensah-sylvester-arhin-62a2b6242/" target="_blank" rel="noopener">LinkedIn &nearr;</a></li>
                 <li><a href="https://www.math.msstate.edu/" target="_blank" rel="noopener">MSU Math &amp; Stats &nearr;</a></li>
-                <li><a href="cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF) &nearr;</a></li>
+                <li><a href="/cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF) &nearr;</a></li>
               </ul>
             </div>
             <div>
@@ -78,7 +78,7 @@
               <ul>
                 <li><a href="mailto:mensahsylvesterarhin@gmail.com">mensahsylvesterarhin@gmail.com</a></li>
                 <li>Starkville, MS &middot; CT</li>
-                <li><a href="contact.html">Get in touch &rarr;</a></li>
+                <li><a href="/contact.html">Get in touch &rarr;</a></li>
               </ul>
             </div>
           </div>

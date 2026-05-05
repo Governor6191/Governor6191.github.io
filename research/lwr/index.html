@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Shock Wave Dynamics in Traffic Flow — Sylvester Arhin Mensah</title>
+<meta name="description" content="LWR conservation law calibrated and validated against NGSIM US-101 trajectory data. Course project, MA 8213, Mississippi State University, Spring 2026." />
+<link rel="canonical" href="https://governor6191.github.io/research/lwr/" />
+
+<!-- Open Graph + Twitter -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Shock Wave Dynamics in Traffic Flow: LWR Calibration with NGSIM Data" />
+<meta property="og:description" content="A first-order Godunov finite-volume scheme for the LWR conservation law, calibrated against NGSIM US-101 trajectories. Course project, MA 8213, Spring 2026." />
+<meta property="og:url" content="https://governor6191.github.io/research/lwr/" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta property="og:image:type" content="image/png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Shock Wave Dynamics in Traffic Flow: LWR Calibration with NGSIM Data" />
+<meta name="twitter:description" content="LWR conservation law calibrated against NGSIM US-101. Course project, MA 8213, Spring 2026." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+
+<link rel="stylesheet" href="/shared.css" />
+
+<!-- KaTeX for math rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body, {delimiters: [{left: '\\\\[', right: '\\\\]', display: true},{left: '\\\\(', right: '\\\\)', display: false}], throwOnError: false});"></script>
+
+<style>
+  /* ============================================================
+     Research detail page — arXiv-style landing.
+     Single column, paper-readable line length, math via KaTeX.
+     ============================================================ */
+
+  .paper {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .paper-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    margin: 32px 0 24px;
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s, color .15s;
+  }
+  .paper-back:hover { color: var(--ink); border-color: var(--ink); }
+
+  .paper-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent-text);
+    margin-bottom: 16px;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .paper-eyebrow::before {
+    content: ''; width: 24px; height: 2px; background: var(--accent);
+  }
+  .paper-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--accent-3);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+  }
+
+  .paper h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .paper-byline {
+    font-family: var(--sans);
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .paper-affil {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink-2);
+    margin-bottom: 4px;
+  }
+  .paper-meta {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 32px;
+  }
+
+  /* ===== action bar ===== */
+  .actions {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    padding: 16px 0;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    margin-bottom: 40px;
+  }
+  .actions .btn { font-size: 12px; padding: 10px 18px; }
+
+  /* ===== section headings ===== */
+  .paper h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 56px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .paper h2 .secnum {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent-text);
+    margin-right: 12px;
+    letter-spacing: 0.08em;
+  }
+  .paper h3 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink);
+    margin: 32px 0 12px;
+    letter-spacing: -0.005em;
+  }
+
+  /* ===== body prose ===== */
+  .paper p {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+  .paper p.lede {
+    font-size: 17px;
+    color: var(--ink);
+    line-height: 1.65;
+  }
+  .paper a { color: var(--accent-2-text); border-bottom: 1px solid var(--accent-2-text); }
+  .paper a:hover { color: var(--accent-text); border-color: var(--accent-text); }
+  .paper ul, .paper ol {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 18px 22px;
+    color: var(--ink);
+  }
+  .paper li { margin-bottom: 6px; }
+
+  /* ===== abstract block ===== */
+  .abstract {
+    background: var(--bg-2);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin: 0 0 40px;
+  }
+  .abstract h2 {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--accent-text);
+    border-bottom: none;
+    padding-bottom: 0;
+    margin: 0 0 14px;
+  }
+  .abstract p {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .abstract p:last-child { margin-bottom: 0; }
+
+  /* ===== quick-facts grid ===== */
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 0 40px;
+    background: var(--bg-2);
+  }
+  .facts > div {
+    padding: 14px 18px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .facts > div:nth-child(2n) { border-right: 0; }
+  .facts > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .facts dt {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+  }
+  .facts dd {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* ===== TOC ===== */
+  .toc {
+    background: var(--bg-3);
+    border: 1px solid var(--rule-2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 0 0 40px;
+  }
+  .toc h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+    margin: 0 0 12px;
+  }
+  .toc ol {
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 2;
+    column-gap: 32px;
+  }
+  .toc ol li {
+    margin-bottom: 6px;
+    break-inside: avoid;
+  }
+  .toc ol a {
+    color: var(--ink);
+    border: 0;
+  }
+  .toc ol a:hover { color: var(--accent-text); }
+  .toc ol .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-text);
+    margin-right: 8px;
+  }
+
+  /* ===== math display ===== */
+  .math-display {
+    margin: 24px 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+  .katex { font-size: 1.05em !important; }
+  .katex-display { margin: 24px 0 !important; }
+
+  /* ===== figures ===== */
+  .figure {
+    margin: 32px 0;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .figure-body {
+    padding: 28px;
+    background:
+      repeating-linear-gradient(135deg, rgba(22,22,29,0.04) 0 12px, transparent 12px 24px),
+      var(--bg-3);
+    min-height: 180px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    border-bottom: 1px solid var(--rule);
+  }
+  .figure-body .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-2);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 8px;
+  }
+  .figure-body .desc {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    max-width: 50ch;
+    margin-bottom: 16px;
+  }
+  .figure-body .pdf-link {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-text);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+  }
+  .figure-caption {
+    padding: 14px 22px;
+    background: var(--bg-2);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .figure-caption b { color: var(--ink); }
+
+  /* ===== results table ===== */
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 14px;
+    margin: 24px 0;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .results-table thead {
+    background: var(--bg-ink);
+    color: var(--bg);
+  }
+  .results-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .results-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  .results-table tbody tr:last-child td { border-bottom: 0; }
+  .results-table tbody tr:nth-child(even) { background: var(--bg-3); }
+  .results-table .mono { font-family: var(--mono); font-size: 13px; }
+
+  /* ===== code blocks ===== */
+  .code {
+    background: var(--bg-ink);
+    border-radius: 8px;
+    margin: 24px 0;
+    overflow: hidden;
+    border: 1px solid var(--ink);
+  }
+  .code-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .code-head .filename { color: var(--accent-3); }
+  .code pre {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.92);
+    padding: 16px;
+    overflow-x: auto;
+    margin: 0;
+  }
+  .code pre .kw { color: #ff8a73; }
+  .code pre .fn { color: #5cc8ff; }
+  .code pre .num { color: #ffd23f; }
+  .code pre .com { color: rgba(255,255,255,0.45); font-style: italic; }
+  .code pre .str { color: #6dd6a3; }
+
+  /* ===== references ===== */
+  .refs {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    counter-reset: ref;
+    list-style: none;
+    padding-left: 0;
+  }
+  .refs li {
+    counter-increment: ref;
+    padding-left: 36px;
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .refs li::before {
+    content: '[' counter(ref) ']';
+    position: absolute;
+    left: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+  .refs em { font-style: italic; color: var(--ink); }
+
+  /* ===== cite block ===== */
+  .cite {
+    background: var(--bg-2);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 24px 0 0;
+  }
+  .cite-head {
+    padding: 10px 16px;
+    background: var(--bg-3);
+    border-bottom: 1.5px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cite-copy {
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 0;
+    letter-spacing: 0.1em;
+    transition: background .15s;
+  }
+  .cite-copy:hover { background: var(--accent); color: var(--ink); }
+  .cite-copy.done { background: var(--accent-4); color: var(--ink); }
+  .cite pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink);
+    padding: 16px;
+    overflow-x: auto;
+    margin: 0;
+    background: var(--bg-2);
+  }
+
+  /* ===== footer note ===== */
+  .paper-foot {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 2px solid var(--ink);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .paper-foot a { color: var(--ink); border-bottom: 1px solid var(--ink); }
+
+  @media (max-width: 720px) {
+    .facts { grid-template-columns: 1fr; }
+    .facts > div { border-right: 0; }
+    .toc ol { columns: 1; }
+  }
+</style>
+</head>
+<body data-page="research">
+<div id="nav-mount"></div>
+
+<main class="paper">
+
+  <a class="paper-back" href="/research.html">← Back to research</a>
+
+  <div class="paper-eyebrow">
+    Numerical PDE · Course Project
+    <span class="paper-status">Complete</span>
+  </div>
+
+  <h1>Shock Wave Dynamics in Traffic Flow: LWR Model Calibration and Validation with NGSIM Data.</h1>
+
+  <div class="paper-byline">Sylvester Arhin Mensah</div>
+  <div class="paper-affil">Department of Mathematics &amp; Statistics, Mississippi State University</div>
+  <div class="paper-meta">MA 8213: Foundations of Applied Mathematics II · Instructor: Prof. Shantia Yarahmadian · Spring 2026</div>
+
+  <div class="actions">
+    <a class="btn primary" href="lwr-ma8213-report.pdf" target="_blank" rel="noopener">Read PDF (37 pages) →</a>
+    <a class="btn" href="#code">Get the code</a>
+    <a class="btn ghost" href="#cite">Cite this</a>
+  </div>
+
+  <!-- ============== ABSTRACT ============== -->
+  <section class="abstract">
+    <h2>Abstract</h2>
+    <p>
+      This paper investigates the ability of first-order nonlinear conservation laws
+      to capture the formation and propagation of traffic congestion waves in real
+      highway data. The Lighthill–Whitham–Richards (LWR) model is derived from
+      first principles and calibrated using high-resolution vehicle trajectory data
+      from the NGSIM US-101 dataset. Empirical fundamental diagrams are constructed
+      using Edie's definitions, and the Greenshields model is fitted to obtain
+      macroscopic traffic parameters.
+    </p>
+    <p>
+      Analytical results from the method of characteristics are used to predict
+      shock formation and propagation, and the Rankine–Hugoniot condition is
+      applied to estimate shock speeds. These predictions are compared with
+      observed congestion waves extracted from space–time speed contours. Despite
+      its simplicity, the LWR model reproduces the qualitative structure of
+      backward-propagating traffic shocks and provides reasonable quantitative
+      agreement in shock speeds.
+    </p>
+    <p>
+      A Godunov finite volume scheme is implemented to solve the model
+      numerically, and simulation results are compared with both analytical
+      solutions and empirical observations. The results highlight both the
+      strengths and limitations of first-order traffic flow models and provide a
+      foundation for incorporating data-driven corrections in future work.
+    </p>
+  </section>
+
+  <!-- ============== AT-A-GLANCE ============== -->
+  <section>
+    <h2><span class="secnum">★</span> At a glance</h2>
+
+    <dl class="facts">
+      <div><dt>Model</dt><dd>LWR scalar conservation law with Greenshields fundamental diagram</dd></div>
+      <div><dt>Numerical scheme</dt><dd>Godunov finite volume, CFL = 0.9</dd></div>
+      <div><dt>Data</dt><dd>NGSIM US-101 trajectories · Jun 15, 2005 · ~3M observations</dd></div>
+      <div><dt>Aggregation</dt><dd>Edie's definitions, 50 m × 30 s cells, 5 lanes</dd></div>
+      <div><dt>Free-flow speed v<sub>max</sub></dt><dd>34.7 mph</dd></div>
+      <div><dt>Jam density ρ<sub>max</sub></dt><dd>155 veh/mi/lane</dd></div>
+      <div><dt>Critical density ρ<sub>c</sub></dt><dd>77 veh/mi/lane</dd></div>
+      <div><dt>Capacity q<sub>max</sub></dt><dd>1,342 veh/hr/lane</dd></div>
+      <div><dt>Implementation</dt><dd>Python · NumPy · pandas · matplotlib</dd></div>
+      <div><dt>Length</dt><dd>37 pages · 49 numbered equations · 4 figures · 11 references</dd></div>
+    </dl>
+  </section>
+
+  <!-- ============== TOC ============== -->
+  <section>
+    <h2><span class="secnum">§</span> Contents</h2>
+
+    <div class="toc">
+      <h3>Sections &amp; appendices</h3>
+      <ol>
+        <li><span class="num">1</span><a href="#s1">Introduction and Motivation</a></li>
+        <li><span class="num">2</span><a href="#s2">Derivation of the LWR Conservation Law</a></li>
+        <li><span class="num">3</span><a href="#s3">Calibration from NGSIM Data</a></li>
+        <li><span class="num">4</span><a href="#s4">Method of Characteristics &amp; Wave Breaking</a></li>
+        <li><span class="num">5</span><a href="#s5">Shock Waves &amp; Rankine–Hugoniot</a></li>
+        <li><span class="num">6</span><a href="#s6">Riemann Problems</a></li>
+        <li><span class="num">7</span><a href="#s7">Burgers' Equation &amp; Viscous Shocks</a></li>
+        <li><span class="num">8</span><a href="#s8">Godunov Finite Volume Scheme</a></li>
+        <li><span class="num">9</span><a href="#s9">Results &amp; Comparison with Real Data</a></li>
+        <li><span class="num">10</span><a href="#s10">Model Limitations</a></li>
+        <li><span class="num">11</span><a href="#s11">Conclusions</a></li>
+        <li><span class="num">A</span><a href="#code">Data processing code</a></li>
+        <li><span class="num">B</span><a href="#code">Godunov solver code</a></li>
+        <li><span class="num">C</span><a href="#code">Plotting code</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============== SECTION SUMMARIES ============== -->
+
+  <section id="s1">
+    <h2><span class="secnum">1</span> Introduction and Motivation</h2>
+    <p class="lede">
+      Traffic jams behave like shock waves. The same nonlinear conservation laws
+      that govern shock formation in gas dynamics also describe how congestion
+      forms and propagates along a highway — a fact first established by
+      Lighthill and Whitham (1955) and independently by Richards (1956).
+    </p>
+    <p>
+      This project carries out a complete mathematical analysis of the LWR
+      traffic flow model, from the derivation of the governing equation to
+      numerical simulation and comparison with real data. The work covers
+      (i) deriving the LWR conservation law from first principles,
+      (ii) using the method of characteristics to predict shock formation,
+      (iii) applying the Rankine–Hugoniot jump condition to compute shock
+      speeds, (iv) studying Burgers' equation as a model for the internal
+      structure of the shock, (v) implementing a Godunov-type finite volume
+      scheme, and (vi) calibrating and validating the model on the NGSIM US-101
+      dataset.
+    </p>
+  </section>
+
+  <section id="s2">
+    <h2><span class="secnum">2</span> Derivation of the LWR Conservation Law</h2>
+    <p>
+      The traffic density \(\rho(x,t)\) and flux \(q(x,t)\) on a single-lane
+      highway must obey vehicle conservation. Applying the conservation
+      principle to a fixed segment and shrinking the interval gives the
+      continuity equation:
+    </p>
+    <div class="math-display">
+      \[ \frac{\partial \rho}{\partial t} + \frac{\partial q}{\partial x} = 0. \]
+    </div>
+    <p>
+      The model is closed by the equilibrium assumption \(q = q(\rho)\) — the
+      <em>fundamental diagram</em>. Substituting the simplest such closure, the
+      Greenshields model \(v(\rho) = v_{\max}(1 - \rho/\rho_{\max})\), gives the
+      LWR equation:
+    </p>
+    <div class="math-display">
+      \[ \frac{\partial \rho}{\partial t} + q'(\rho)\,\frac{\partial \rho}{\partial x} = 0, \quad
+         c(\rho) \equiv q'(\rho) = v_{\max}\!\left(1 - \frac{2\rho}{\rho_{\max}}\right). \]
+    </div>
+    <p>
+      Three observations follow that drive the rest of the analysis: the wave
+      speed \(c(\rho)\) is <b>less</b> than the vehicle speed \(v(\rho)\), so
+      information travels backward relative to the cars; \(c(\rho)\) is
+      <b>negative</b> for \(\rho > \rho_c\), so disturbances propagate against
+      traffic in congestion; and \(c(\rho)\) <b>depends on</b> \(\rho\), making
+      the equation nonlinear and shock-forming.
+    </p>
+  </section>
+
+  <section id="s3">
+    <h2><span class="secnum">3</span> Calibration from NGSIM Data</h2>
+    <p>
+      The Next Generation Simulation (NGSIM) US-101 dataset captures individual
+      vehicle trajectories on the southbound Hollywood Freeway in Los Angeles,
+      collected on June 15, 2005 over three 15-minute peak-traffic windows.
+      The raw data records position, speed, and lane assignment for every
+      vehicle at 0.1-second intervals, giving roughly three million individual
+      observations across five mainline lanes.
+    </p>
+    <p>
+      Microscopic trajectories are converted to macroscopic density, flow, and
+      space-mean speed using <b>Edie's generalized definitions</b> on a
+      space–time grid of 50 m × 30 s cells. Per-lane aggregation produces
+      ~6,200 fundamental-diagram observations.
+    </p>
+
+    <div class="figure">
+      <div class="figure-body">
+        <div class="label">Figure 2 · p. 11</div>
+        <div class="desc">
+          Empirical fundamental diagram from NGSIM US-101 (blue scatter)
+          with Greenshields model fit (red curve). Three panels:
+          speed vs. density, flow vs. density, speed vs. flow.
+        </div>
+        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=11" target="_blank" rel="noopener">View full figure in PDF →</a>
+      </div>
+      <div class="figure-caption">
+        <b>Figure 2.</b> Linear regression of speed on density yields the
+        calibrated Greenshields parameters reported in the at-a-glance table.
+      </div>
+    </div>
+
+    <p>
+      Linear regression of speed on density yields the calibrated parameters
+      <b>v<sub>max</sub> = 34.7 mph</b>, <b>ρ<sub>max</sub> = 155 veh/mi/lane</b>,
+      <b>ρ<sub>c</sub> = 77 veh/mi/lane</b>, and <b>q<sub>max</sub> = 1,342
+      veh/hr/lane</b>. The lower-than-posted free-flow speed reflects the fact
+      that the data was collected during peak congestion — the dataset contains
+      almost no truly free-flow traffic.
+    </p>
+
+    <div class="figure">
+      <div class="figure-body">
+        <div class="label">Figure 3 · p. 12</div>
+        <div class="desc">
+          Space–time speed contour for US-101. Diagonal red/yellow bands
+          (low speed) propagating from right to left and bottom to top show
+          backward-moving congestion waves — exactly the behavior the LWR
+          theory predicts.
+        </div>
+        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=12" target="_blank" rel="noopener">View full figure in PDF →</a>
+      </div>
+      <div class="figure-caption">
+        <b>Figure 3.</b> The slopes of the diagonal bands give an empirical
+        estimate of observed shock speeds: roughly −10 to −15 mph.
+      </div>
+    </div>
+  </section>
+
+  <section id="s4">
+    <h2><span class="secnum">4</span> Method of Characteristics &amp; Wave Breaking</h2>
+    <p>
+      A characteristic curve is a path \(x(t)\) along which the LWR PDE reduces
+      to an ODE: \(\rho\) is constant along the characteristic, so each piece
+      of the initial profile propagates at its own wave speed
+      \(c(\rho_0(\xi))\). Characteristics from regions of differing density
+      can collide. When they do, the profile steepens until it becomes
+      multi-valued — the <em>gradient catastrophe</em>. The breaking time is
+    </p>
+    <div class="math-display">
+      \[ t_b = \min_\xi \left\{ -\frac{1}{q''(\rho_0(\xi))\,\rho_0'(\xi)} \;:\; q''(\rho_0(\xi))\,\rho_0'(\xi) < 0 \right\}. \]
+    </div>
+    <p>
+      For Greenshields, \(q'' < 0\), so wave breaking occurs whenever the
+      initial density is increasing — the physically intuitive case of light
+      traffic catching up to heavy traffic. A shock forms at the boundary.
+    </p>
+  </section>
+
+  <section id="s5">
+    <h2><span class="secnum">5</span> Shock Waves &amp; the Rankine–Hugoniot Condition</h2>
+    <p>
+      At a discontinuity, the classical PDE breaks down and we look for weak
+      solutions that satisfy the conservation law in integral form. The
+      Rankine–Hugoniot jump condition relates the shock speed \(\dot s\) to the
+      jump in density and flux across it:
+    </p>
+    <div class="math-display">
+      \[ \dot s = \frac{q(\rho_l) - q(\rho_r)}{\rho_l - \rho_r} = \frac{[q]}{[\rho]}. \]
+    </div>
+    <p>
+      For Greenshields with left state \(\rho_l\) and right state \(\rho_r\),
+      a direct computation gives \(\dot s = v_{\max}(1 - (\rho_l + \rho_r)/\rho_{\max})\).
+      The shock moves <b>backward</b> whenever \(\rho_l + \rho_r > \rho_{\max}\)
+      — the physical signature of a backward-propagating traffic jam.
+    </p>
+    <p>
+      The Rankine–Hugoniot condition by itself does not select a unique
+      solution. The <b>Lax entropy condition</b> picks the physically
+      admissible one: a shock from \(\rho_l\) to \(\rho_r\) is admissible iff
+      \(c(\rho_l) > \dot s > c(\rho_r)\). For the concave Greenshields flux
+      this is equivalent to requiring \(\rho_l < \rho_r\) (density increases
+      across the shock — the back of a jam, not the front).
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2><span class="secnum">6</span> Riemann Problems: Three Traffic Scenarios</h2>
+    <p>
+      A <em>Riemann problem</em> is the LWR equation with piecewise-constant
+      initial data. Three Riemann problems with the calibrated NGSIM
+      parameters cover the canonical traffic situations:
+    </p>
+    <ul>
+      <li>
+        <b>Scenario 1 — Approaching a jam.</b> Light traffic
+        (\(\rho_L = 40\)) meets heavy congestion (\(\rho_R = 120\)).
+        A backward-propagating shock forms with speed
+        \(\dot s = -1.1\) mph: drivers cruising at 25.7 mph encounter the
+        shock and abruptly slow to 7.8 mph.
+      </li>
+      <li>
+        <b>Scenario 2 — Green light release.</b> Queued traffic
+        (\(\rho_L = 120\)) ahead of free road (\(\rho_R = 40\)) produces a
+        rarefaction fan: a smooth, continuous transition spreading between
+        wave speeds \(c(120) = -19.0\) and \(c(40) = +16.8\) mph. Cars
+        accelerate gradually as the queue dissipates.
+      </li>
+      <li>
+        <b>Scenario 3 — Bottleneck merging.</b> A three-piece initial
+        condition (50 / 110 / 50 veh/mi) generates a shock at the back
+        of the congested region (\(\dot s = -1.5\) mph) and a rarefaction
+        at the front. The congested region slowly drifts backward and
+        spreads — exactly the pattern observed near on-ramp merging zones.
+      </li>
+    </ul>
+  </section>
+
+  <section id="s7">
+    <h2><span class="secnum">7</span> Burgers' Equation &amp; the Viscous Shock Structure</h2>
+    <p>
+      Real traffic shocks are not infinitely sharp — there is always a
+      transition zone where density changes rapidly but continuously. Adding
+      a small diffusion term to the LWR equation gives <b>Burgers' equation</b>,
+    </p>
+    <div class="math-display">
+      \[ \frac{\partial u}{\partial t} + u\,\frac{\partial u}{\partial x} = D\,\frac{\partial^2 u}{\partial x^2}, \]
+    </div>
+    <p>
+      whose traveling-wave solution is a hyperbolic-tangent profile of width
+      \(\delta = 4D/(u_l - u_r)\). The shock thickens with diffusion \(D\) and
+      sharpens with shock strength. In the inviscid limit \(D \to 0\), the
+      tanh profile collapses to the discontinuous LWR shock — confirming that
+      the LWR shock is the correct limiting behavior. Physically, the
+      "diffusion" arises from driver anticipation and finite vehicle length;
+      transition zones at the back of real jams are typically 100–300 m wide.
+    </p>
+  </section>
+
+  <section id="s8">
+    <h2><span class="secnum">8</span> Numerical Method: Godunov Finite Volume Scheme</h2>
+    <p>
+      For general initial conditions (those extracted from NGSIM data), an
+      analytical solution is not available. The <b>Godunov scheme</b> divides
+      the spatial domain into \(N\) cells and updates the cell-averaged density:
+    </p>
+    <div class="math-display">
+      \[ \rho_j^{n+1} = \rho_j^n - \frac{\Delta t}{\Delta x}\!\left[ F^n_{j+1/2} - F^n_{j-1/2} \right], \]
+    </div>
+    <p>
+      with the numerical flux \(F^n_{j+1/2}\) computed by solving the exact
+      Riemann problem at each cell interface. For the concave Greenshields
+      flux this has a simple closed form, and the time step is constrained by
+      the CFL condition \(\Delta t \leq \Delta x / v_{\max}\) (CFL number 0.9
+      in the implementation).
+    </p>
+    <p>
+      The scheme is <b>conservative</b> (vehicles neither created nor
+      destroyed), <b>monotone</b> (no spurious oscillations near shocks),
+      automatically handles shocks and rarefactions through the Riemann
+      solver, and satisfies a discrete entropy inequality (always selects
+      the physically correct weak solution).
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2><span class="secnum">9</span> Results: Simulations vs. Real Data</h2>
+
+    <div class="figure">
+      <div class="figure-body">
+        <div class="label">Figure 4 · p. 25</div>
+        <div class="desc">
+          Godunov scheme solutions for two Riemann problems using
+          NGSIM-calibrated parameters: (a) shock wave with density jump
+          40 → 120 veh/mi propagating backward; (b) rarefaction wave
+          spreading from 120 → 40 veh/mi.
+        </div>
+        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=25" target="_blank" rel="noopener">View full figure in PDF →</a>
+      </div>
+      <div class="figure-caption">
+        <b>Figure 4.</b> The numerical shock travels at the correct speed and
+        the rarefaction has the correct fan structure — verifying that the
+        Godunov solver captures the wave dynamics.
+      </div>
+    </div>
+
+    <p>
+      The headline quantitative comparison is shock speed. Predicted speeds
+      from the Rankine–Hugoniot formula with the fitted Greenshields parameters
+      are compared with the observed range estimated from the slopes of the
+      backward-propagating bands in the space–time speed contour:
+    </p>
+
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Case</th>
+          <th>Density states</th>
+          <th>Predicted</th>
+          <th>Observed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Moderate to congested</td>
+          <td class="mono">ρ<sub>l</sub>=40, ρ<sub>r</sub>=120</td>
+          <td class="mono">−1.1 mph</td>
+          <td class="mono">−15 to −10 mph</td>
+        </tr>
+        <tr>
+          <td>Free-flow to congested</td>
+          <td class="mono">ρ<sub>l</sub>=30, ρ<sub>r</sub>=140</td>
+          <td class="mono">−3.4 mph</td>
+          <td class="mono">−15 to −10 mph</td>
+        </tr>
+        <tr>
+          <td>Higher-density shock</td>
+          <td class="mono">ρ<sub>l</sub>=50, ρ<sub>r</sub>=130</td>
+          <td class="mono">−5.6 mph</td>
+          <td class="mono">−15 to −10 mph</td>
+        </tr>
+        <tr>
+          <td>Strong congestion jump</td>
+          <td class="mono">ρ<sub>l</sub>=40, ρ<sub>r</sub>=150</td>
+          <td class="mono">−7.8 mph</td>
+          <td class="mono">−15 to −10 mph</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The model gets the <b>direction</b> right, the <b>order of magnitude</b>
+      right, and the <b>qualitative structure</b> of backward-propagating
+      congestion waves clearly visible — but it consistently <b>underestimates
+      the magnitude</b> of observed shock speeds. The gap comes partly from
+      the Greenshields model's underestimate of the free-flow speed (since
+      NGSIM was collected under congested conditions) and partly from
+      lane-changing, merging, and driver-variability effects that the
+      one-dimensional model does not capture.
+    </p>
+  </section>
+
+  <section id="s10">
+    <h2><span class="secnum">10</span> Model Limitations</h2>
+    <p>
+      Three structural limitations matter for high-fidelity prediction:
+      (i) the LWR equilibrium assumption ignores driver reaction time and
+      anticipation, (ii) treating traffic as a single homogeneous stream
+      misses multi-lane interactions and on/off-ramp effects, and (iii) the
+      model has no representation of stochastic driver variability — the main
+      reason for the observed scatter in the empirical fundamental diagram.
+    </p>
+    <p>
+      The choice of Greenshields also introduces bias. Because the NGSIM data
+      was collected during peak congestion, the fitted v<sub>max</sub> is
+      lower than what would obtain under free-flow conditions, and this
+      directly biases predicted shock speeds. More flexible fundamental-diagram
+      shapes (Greenberg, Underwood, triangular) could improve the fit while
+      preserving the conservation-law structure.
+    </p>
+  </section>
+
+  <section id="s11">
+    <h2><span class="secnum">11</span> Conclusions &amp; Future Work</h2>
+    <p>
+      The LWR model — derived from a conservation principle and an
+      equilibrium speed-density relationship — produces a first-order
+      hyperbolic PDE whose mathematical structure is the same as the
+      equations governing shock waves in gas dynamics. Calibrated against
+      real US-101 trajectory data and solved with a Godunov scheme, it
+      reproduces the qualitative structure of backward-propagating traffic
+      shocks with reasonable quantitative agreement, while making its own
+      limitations transparent.
+    </p>
+    <p>
+      Several directions extend this analysis: higher-order fundamental
+      diagrams (Greenberg, Underwood) that better fit the free-flow regime;
+      second-order traffic models such as Aw-Rascle-Zhang that capture
+      anticipation effects; multi-lane extensions and on/off-ramp coupling
+      for the US-101 study section; and recent physics-informed deep learning
+      approaches that combine classical PDE models with data-driven
+      corrections to improve predictive accuracy while preserving
+      interpretability. The journal extension of this work pursues some of
+      these directions.
+    </p>
+  </section>
+
+  <!-- ============== CODE ============== -->
+  <section id="code">
+    <h2><span class="secnum">A–C</span> Code Appendices</h2>
+    <p>
+      The full implementation lives in three appendices of the report:
+      data processing (Appendix A, p. 29), the Godunov solver (Appendix B,
+      p. 31), and the plotting code (Appendix C, p. 33). Selected excerpts:
+    </p>
+
+    <div class="code">
+      <div class="code-head">
+        <span class="filename">godunov_flux.py</span>
+        <span>Appendix B · p. 31</span>
+      </div>
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="com"># -- Model parameters (from NGSIM calibration) -------</span>
+vmax   = <span class="num">34.7</span>     <span class="com"># free-flow speed (mph)</span>
+rhomax = <span class="num">155.0</span>    <span class="com"># jam density (veh/mi/lane)</span>
+rhoc   = rhomax / <span class="num">2.0</span>
+
+<span class="kw">def</span> <span class="fn">flux</span>(rho):
+    <span class="str">"""Greenshields flux: q(rho) = vmax*rho*(1 - rho/rhomax)"""</span>
+    <span class="kw">return</span> vmax * rho * (<span class="num">1.0</span> - rho / rhomax)
+
+<span class="kw">def</span> <span class="fn">godunov_flux</span>(rhoL, rhoR):
+    <span class="str">"""Godunov numerical flux for concave flux function."""</span>
+    <span class="kw">if</span> rhoL &lt;= rhoR:
+        <span class="com"># Shock or same-side: min of fluxes</span>
+        <span class="kw">if</span> rhoL &gt;= rhoc:   <span class="kw">return</span> <span class="fn">flux</span>(rhoR)
+        <span class="kw">elif</span> rhoR &lt;= rhoc: <span class="kw">return</span> <span class="fn">flux</span>(rhoL)
+        <span class="kw">else</span>:              <span class="kw">return</span> <span class="fn">min</span>(<span class="fn">flux</span>(rhoL), <span class="fn">flux</span>(rhoR))
+    <span class="kw">else</span>:
+        <span class="com"># Rarefaction: max of fluxes</span>
+        <span class="kw">if</span> rhoR &gt;= rhoc:   <span class="kw">return</span> <span class="fn">flux</span>(rhoR)
+        <span class="kw">elif</span> rhoL &lt;= rhoc: <span class="kw">return</span> <span class="fn">flux</span>(rhoL)
+        <span class="kw">else</span>:              <span class="kw">return</span> <span class="fn">flux</span>(rhoc)</pre>
+    </div>
+
+    <div class="code">
+      <div class="code-head">
+        <span class="filename">solve_lwr.py</span>
+        <span>Appendix B · p. 31</span>
+      </div>
+<pre><span class="kw">def</span> <span class="fn">solve_lwr</span>(rho0, L, N, T, cfl=<span class="num">0.9</span>):
+    <span class="str">"""Solve the LWR equation with the Godunov scheme."""</span>
+    dx  = L / N
+    x   = np.<span class="fn">linspace</span>(dx/<span class="num">2</span>, L - dx/<span class="num">2</span>, N)
+    dt  = cfl * dx / vmax
+    rho = rho0.<span class="fn">copy</span>()
+    t   = <span class="num">0.0</span>
+
+    <span class="kw">while</span> t &lt; T:
+        <span class="kw">if</span> t + dt &gt; T:
+            dt = T - t
+
+        <span class="com"># Godunov flux at every interface</span>
+        F = np.<span class="fn">zeros</span>(N + <span class="num">1</span>)
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(N + <span class="num">1</span>):
+            rL = rho[j-<span class="num">1</span>] <span class="kw">if</span> j &gt; <span class="num">0</span> <span class="kw">else</span> rho[<span class="num">0</span>]
+            rR = rho[j]   <span class="kw">if</span> j &lt; N <span class="kw">else</span> rho[-<span class="num">1</span>]
+            F[j] = <span class="fn">godunov_flux</span>(rL, rR)
+
+        <span class="com"># Update cell averages (conservation law in discrete form)</span>
+        rho = rho - (dt / dx) * (F[<span class="num">1</span>:] - F[:-<span class="num">1</span>])
+        t  += dt
+    <span class="kw">return</span> x, rho</pre>
+    </div>
+
+    <p>
+      Appendix A handles the NGSIM CSV pipeline — loading, lane filtering,
+      Edie's-cell aggregation, and the Greenshields linear regression that
+      produces the calibrated parameters. Appendix C generates the
+      fundamental-diagram plots (Figure&nbsp;2) and the space–time speed
+      contour (Figure&nbsp;3). Full listings are in the
+      <a href="lwr-ma8213-report.pdf" target="_blank" rel="noopener">report PDF</a>;
+      the public Git repository is in preparation.
+    </p>
+  </section>
+
+  <!-- ============== REFERENCES ============== -->
+  <section id="refs">
+    <h2><span class="secnum">→</span> References</h2>
+
+    <ol class="refs">
+      <li>J. D. Logan. <em>Applied Mathematics</em>, 4th ed. Wiley, 2013.</li>
+      <li>M. J. Lighthill and G. B. Whitham. "On kinematic waves II. A theory of traffic flow on long crowded roads." <em>Proc. Royal Society A</em>, 229(1178):317–345, 1955.</li>
+      <li>P. I. Richards. "Shock waves on the highway." <em>Operations Research</em>, 4(1):42–51, 1956.</li>
+      <li>B. D. Greenshields. "A study of traffic capacity." <em>Highway Research Board Proceedings</em>, 14:448–477, 1935.</li>
+      <li>Federal Highway Administration. "Next Generation Simulation (NGSIM) Vehicle Trajectories and Supporting Data." U.S. DOT ITS DataHub, 2006. <a href="https://data.transportation.gov" target="_blank" rel="noopener">data.transportation.gov</a>.</li>
+      <li>C. F. Daganzo. <em>Fundamentals of Transportation and Traffic Operations</em>. Pergamon, 1997.</li>
+      <li>G. B. Whitham. <em>Linear and Nonlinear Waves</em>. Wiley-Interscience, 1974.</li>
+      <li>R. Shi, Z. Mo, K. Huang, X. Di, and Q. Du. "Physics-informed deep learning for traffic state estimation based on the traffic flow model and computational graph method." <em>Information Fusion</em>, 101:101971, 2024.</li>
+      <li>Z. S. Qian, J. Li, X. Li, M. Zhang, and H. Wang. "Modeling heterogeneous traffic flow: A pragmatic approach." <em>Transportation Research Part B</em>, 99:183–204, 2017.</li>
+      <li>J. Friedrich, O. Kolb, and S. Göttlich. "A Godunov type scheme for a class of LWR traffic flow models with non-local flux." <em>Networks and Heterogeneous Media</em>, 13(4):531–547, 2018.</li>
+      <li>L. Vacek, C.-W. Shu, and V. Kučera. "Discontinuous Galerkin method with Godunov-like numerical fluxes for traffic flows on networks. Part I: L² stability." <em>Applications of Mathematics</em>, 70:311–339, 2025.</li>
+    </ol>
+  </section>
+
+  <!-- ============== CITE ============== -->
+  <section id="cite">
+    <h2><span class="secnum">¶</span> Cite this work</h2>
+    <p>
+      This is a course-project working paper, not yet peer-reviewed. If you
+      reference it, the suggested citation is:
+    </p>
+    <p>
+      Mensah, S. A. (2026). <em>Shock Wave Dynamics in Traffic Flow: LWR
+      Model Calibration and Validation with NGSIM Data.</em> Course project,
+      MA 8213: Foundations of Applied Mathematics II, Mississippi State
+      University.
+    </p>
+
+    <div class="cite">
+      <div class="cite-head">
+        <span>BibTeX</span>
+        <button class="cite-copy" type="button" id="cite-copy" aria-label="Copy BibTeX">Copy</button>
+      </div>
+<pre id="cite-bibtex">@misc{mensah2026lwr,
+  author = {Mensah, Sylvester Arhin},
+  title  = {Shock Wave Dynamics in Traffic Flow:
+            {LWR} Model Calibration and Validation with {NGSIM} Data},
+  year   = {2026},
+  note   = {Course project, MA 8213: Foundations of Applied Mathematics II,
+            Mississippi State University},
+  url    = {https://governor6191.github.io/research/lwr/}
+}</pre>
+    </div>
+  </section>
+
+  <div class="paper-foot">
+    <a href="/research.html">← All research</a>
+    <span>Last updated May 2026</span>
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+
+<script src="/chrome.js"></script>
+<script>
+  // Copy BibTeX
+  document.getElementById('cite-copy').addEventListener('click', async () => {
+    const btn = document.getElementById('cite-copy');
+    const txt = document.getElementById('cite-bibtex').textContent;
+    try {
+      await navigator.clipboard.writeText(txt);
+      btn.textContent = 'Copied';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1800);
+    } catch (e) {
+      btn.textContent = 'Select all';
+      const range = document.createRange();
+      range.selectNodeContents(document.getElementById('cite-bibtex'));
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  });
+</script>
+</body>
+</html>
