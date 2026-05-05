@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sylvester Arhin Mensah — Applied Mathematics &amp; Optimization</title>
+<meta name="description" content="Sylvester Arhin Mensah — PhD student in Applied Mathematics and Statistics at Mississippi State, working on numerical PDEs, optimization, and image processing." />
+<link rel="stylesheet" href="shared.css" />
+<style>
+  /* ============================================================
+     Home page — BRIGHT edition
+     ============================================================ */
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 60px 0 40px;
+    position: relative;
+  }
+  .hero-top-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-status {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 14px;
+    background: var(--accent-4);
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    font-family: var(--mono); font-size: 12px;
+    font-weight: 600;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .hero-status .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--bg);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .hero-locale {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--ink-2);
+    text-transform: uppercase; letter-spacing: 0.14em;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(72px, 12vw, 200px);
+    line-height: 0.86;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    margin-bottom: 32px;
+  }
+  .hero h1 .row { display: block; }
+  .hero h1 em.coral {
+    font-style: italic;
+    color: var(--accent-text);
+    position: relative;
+    display: inline-block;
+  }
+  .hero h1 em.coral::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0.08em;
+    height: 0.15em;
+    background: var(--accent-3);
+    z-index: -1;
+  }
+  .hero h1 .stamp-blue {
+    background: var(--accent-2);
+    color: var(--ink);
+    padding: 0 0.18em;
+    font-style: italic;
+    transform: rotate(-1.5deg);
+    display: inline-block;
+  }
+  .hero h1 .stamp-yellow {
+    background: var(--accent-3);
+    color: var(--ink);
+    padding: 0 0.12em;
+    display: inline-block;
+  }
+
+  .hero-bottom-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 64px;
+    align-items: end;
+    padding-top: 24px;
+    border-top: 1.5px solid var(--ink);
+  }
+  .hero-bio {
+    color: var(--ink-2);
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 56ch;
+    padding-top: 16px;
+  }
+  .hero-bio b { color: var(--ink); font-weight: 500; }
+
+  .hero-actions {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    padding-top: 16px;
+    align-items: center;
+  }
+
+  /* ===== "CURRENTLY WORKING ON" (replaces stats) ===== */
+  .now-doing {
+    margin-top: 96px;
+  }
+  .now-doing-head {
+    display: flex; justify-content: space-between; align-items: end;
+    margin-bottom: 32px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .now-doing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .doing-card {
+    padding: 28px 24px 24px;
+    border: 1.5px solid var(--ink);
+    border-radius: 14px;
+    background: var(--bg-2);
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .doing-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .doing-card:nth-child(1) { background: var(--accent); color: var(--ink); }
+  .doing-card:nth-child(2) { background: var(--accent-2); color: var(--ink); }
+  .doing-card:nth-child(3) { background: var(--bg-2); color: var(--ink); }
+
+  .doing-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(22,22,29,0.12);
+    border: 1px solid rgba(22,22,29,0.25);
+    color: var(--ink);
+  }
+  .doing-card:nth-child(3) .doing-tag { background: var(--accent-3); border-color: var(--ink); }
+  .doing-card h4 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .doing-card p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+    opacity: 0.85;
+  }
+  .doing-card .doing-meta {
+    margin-top: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-top: 12px;
+    border-top: 1px solid rgba(22,22,29,0.18);
+    color: var(--ink);
+  }
+
+  /* ===== FEATURED ===== */
+  .featured {
+    margin-top: 120px;
+  }
+  .section-head {
+    display: flex; justify-content: space-between; align-items: end;
+    margin-bottom: 40px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .section-head .more-link {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 2px;
+    transition: color .15s;
+  }
+  .section-head .more-link:hover { color: var(--accent-text); }
+
+  .featured-card {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    border: 1.5px solid var(--ink);
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--bg-2);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .featured-media {
+    position: relative;
+    background: var(--ink);
+    min-height: 480px;
+    overflow: hidden;
+  }
+  .featured-media .lwr-canvas {
+    position: absolute; inset: 0;
+  }
+  .featured-media .play-pill {
+    position: absolute; bottom: 24px; left: 24px;
+    background: var(--bg-2);
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px 8px 8px;
+    border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .featured-media .play-pill .play {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent);
+    color: var(--ink);
+    display: grid; place-items: center;
+    font-size: 10px;
+  }
+  .featured-media .corner-tag {
+    position: absolute; top: 24px; right: 24px;
+    background: var(--accent-3);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--ink);
+    box-shadow: 2px 2px 0 var(--ink);
+    transform: rotate(3deg);
+  }
+
+  .featured-body {
+    padding: 40px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .featured-body .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .featured-body h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+  .featured-body p {
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .featured-body .meta-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .featured-body .meta-row .mr-cell {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+  .featured-body .meta-row .mr-cell b {
+    display: block;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 2px;
+  }
+
+  /* ===== NOW + PUBS SPLIT ===== */
+  .split {
+    margin-top: 120px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .now-card {
+    padding: 32px;
+    border: 1.5px solid var(--ink);
+    border-radius: 18px;
+    background: var(--accent-3);
+    box-shadow: 6px 6px 0 var(--ink);
+    color: var(--ink);
+  }
+  .now-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .now-card .now-stamp {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--ink-2); letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 600;
+  }
+  .now-card .eyebrow { color: var(--accent-text); }
+  .now-card h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    margin-top: 8px;
+  }
+  .now-list { display: flex; flex-direction: column; gap: 0; }
+  .now-item {
+    display: grid; grid-template-columns: 56px 1fr; gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1.5px solid var(--ink);
+    align-items: start;
+  }
+  .now-item:last-child { border-bottom: 0; }
+  .now-item .marker {
+    font-family: var(--mono); font-size: 11px;
+    font-weight: 700;
+    background: var(--ink);
+    color: var(--accent-3);
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+  .now-item .body { font-size: 14px; line-height: 1.55; color: var(--ink); }
+  .now-item .body b { font-weight: 600; }
+
+  .pubs-preview h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 32px;
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+  .pubs-preview > p {
+    color: var(--ink-2); margin-bottom: 28px; font-size: 14px;
+  }
+  .pub-row {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 20px;
+    padding: 18px 4px;
+    border-bottom: 1.5px solid var(--ink);
+    align-items: start;
+    transition: padding .15s, background .15s;
+    cursor: pointer;
+  }
+  .pub-row:hover { background: var(--accent-3); padding-left: 14px; padding-right: 14px; }
+  .pub-row:hover .pub-title { color: var(--ink); }
+  .pub-year {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-text);
+    padding-top: 2px;
+  }
+  .pub-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    line-height: 1.25;
+    transition: color .2s;
+    margin-bottom: 6px;
+  }
+  .pub-venue {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-2);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+  .pub-link {
+    font-family: var(--mono); font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    padding-top: 4px;
+    white-space: nowrap;
+  }
+
+  /* ===== FOCUS / EQUATION ===== */
+  .focus {
+    margin-top: 120px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .focus .panel {
+    border: 1.5px solid var(--ink);
+    border-radius: 18px;
+    padding: 40px;
+    min-height: 320px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 6px 6px 0 var(--ink);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .focus .panel:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--ink); }
+  .focus .panel.equation {
+    background: var(--accent-2);
+    color: var(--ink);
+  }
+  .focus .panel.equation .eyebrow { color: var(--ink); }
+  .focus .panel.equation .eyebrow::before { background: var(--ink); }
+  .focus .panel.reading {
+    background: var(--bg-2);
+  }
+
+  .focus h4 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .focus p {
+    font-size: 15px; line-height: 1.6;
+    max-width: 38ch;
+  }
+  .focus .equation .equation-display {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 56px;
+    line-height: 1.1;
+    margin: 16px 0;
+    letter-spacing: -0.01em;
+  }
+  .focus .equation-display sub { font-size: 0.5em; font-style: normal; font-family: var(--mono); opacity: 0.8; }
+  .focus .equation-display .op { color: var(--accent-3); }
+
+  .focus .links { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
+  .focus .links a {
+    font-family: var(--mono); font-size: 12px;
+    font-weight: 600;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 2px;
+  }
+  .focus .panel.reading p b { color: var(--accent-text); }
+
+  /* ===== CLOSER ===== */
+  .closer {
+    margin-top: 140px;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 96px 48px;
+    border-radius: 24px;
+    text-align: center;
+    border: 1.5px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--accent);
+    position: relative;
+    overflow: hidden;
+  }
+  .closer::before {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    background: var(--accent);
+    border-radius: 50%;
+    top: -80px; left: -80px;
+    opacity: 0.4;
+    filter: blur(40px);
+  }
+  .closer::after {
+    content: '';
+    position: absolute;
+    width: 240px; height: 240px;
+    background: var(--accent-3);
+    border-radius: 50%;
+    bottom: -100px; right: -60px;
+    opacity: 0.35;
+    filter: blur(50px);
+  }
+  .closer .eyebrow {
+    color: var(--accent-3);
+    justify-content: center;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .closer .eyebrow::before { background: var(--accent-3); }
+  .closer h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 24px;
+    max-width: 18ch;
+    margin-left: auto; margin-right: auto;
+    position: relative;
+  }
+  .closer h2 em {
+    color: var(--accent-3);
+    font-style: italic;
+    background: var(--accent);
+    padding: 0 0.15em;
+    display: inline-block;
+    transform: rotate(-1deg);
+  }
+  .closer p {
+    color: rgba(255,255,255,0.75);
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 48ch;
+    margin: 0 auto 40px;
+    position: relative;
+  }
+  .closer .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+  .closer .btn { background: var(--bg-2); color: var(--ink); border-color: var(--bg); box-shadow: 3px 3px 0 var(--accent); }
+  .closer .btn.primary { background: var(--accent-3); color: var(--ink); border-color: var(--accent-3); }
+  .closer .btn:hover { box-shadow: 5px 5px 0 var(--accent); }
+
+  /* responsive */
+  @media (max-width: 980px) {
+    .hero-bottom-row { grid-template-columns: 1fr; gap: 24px; }
+    .now-doing-grid { grid-template-columns: 1fr; }
+    .featured-card { grid-template-columns: 1fr; }
+    .featured-media { min-height: 320px; }
+    .split { grid-template-columns: 1fr; }
+    .focus { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-page="home">
+<div id="nav-mount"></div>
+
+<main class="wrap">
+
+  <!-- ============== HERO ============== -->
+  <section class="hero">
+    <div class="hero-top-row">
+      <div class="hero-status">
+        <span class="pulse-dot"></span>
+        Available · Summer '26 internships
+      </div>
+      <div class="hero-locale">Starkville, MS · CT</div>
+    </div>
+
+    <h1>
+      <span class="row">Mathematics</span>
+      <span class="row">for systems</span>
+      <span class="row">in <em class="coral">motion.</em></span>
+    </h1>
+
+    <div class="hero-bottom-row">
+      <p class="hero-bio">
+        Hi, I'm <b>Sylvester</b> — a PhD student in Applied Mathematics &amp;
+        Statistics at <b>Mississippi State</b>, working with Prof. Seongjai
+        Kim. My research sits at the intersection of <b>numerical PDEs</b>,
+        <b>optimization</b>, and <b>machine learning</b> — recently, that's
+        meant traffic flow through the LWR conservation law, ambulance
+        routing with Ant Colony Optimization, and edge-detection methods
+        for image processing. I came to this from <b>KNUST</b> in Kumasi,
+        where my undergraduate thesis used ACO to route accident victims
+        through Ghana's hospital network.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="research.html">View research →</a>
+        <a class="btn yellow" href="cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF)</a>
+        <a class="btn ghost" href="contact.html">Say hi</a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============== CURRENTLY WORKING ON ============== -->
+  <section class="now-doing">
+    <div class="now-doing-head">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 12px;">In progress</div>
+        <h2 class="section-title">Currently <em class="hl-yellow">working on.</em></h2>
+      </div>
+      <a class="more-link" href="research.html" style="font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--ink); border-bottom: 2px solid var(--accent); padding-bottom: 2px;">All research →</a>
+    </div>
+
+    <div class="now-doing-grid">
+      <article class="doing-card">
+        <span class="doing-tag">Numerical PDE</span>
+        <h4>Shock waves &amp; the LWR model.</h4>
+        <p>
+          Solving the LWR scalar conservation law with a Godunov finite-volume
+          scheme and validating against vehicle trajectories from the NGSIM
+          US-101 dataset.
+        </p>
+        <div class="doing-meta">MA 8213 · Prof. Yarahmadian</div>
+      </article>
+      <article class="doing-card">
+        <span class="doing-tag">Optimization</span>
+        <h4>ACO ambulance routing, extended.</h4>
+        <p>
+          Extending my KNUST thesis from a single-objective ACO router into a
+          multi-method comparison — ALNS, two-stage stochastic programming,
+          and a hybrid ACO+ML pipeline on the Kumasi road network.
+        </p>
+        <div class="doing-meta">Manuscript · drafting</div>
+      </article>
+      <article class="doing-card">
+        <span class="doing-tag">Image processing</span>
+        <h4>The α-Test, applied.</h4>
+        <p>
+          Joint work with Prof. Kim extending the α-Test framework. Two
+          manuscripts planned — one co-authored with the lab, one
+          first-author follow-up on a new problem class.
+        </p>
+        <div class="doing-meta">With Prof. Seongjai Kim</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============== FEATURED RESEARCH ============== -->
+  <section class="featured">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 12px;">Featured research</div>
+        <h2 class="section-title">Shock waves <em class="hl-coral">in motion.</em></h2>
+      </div>
+      <a class="more-link" href="research.html">All research →</a>
+    </div>
+
+    <article class="featured-card">
+      <div class="featured-media">
+        <canvas class="lwr-canvas" id="lwr-canvas" aria-label="Animated visualization of LWR conservation-law density profiles" role="img"></canvas>
+        <span class="corner-tag">live · ρ(x, t)</span>
+      </div>
+      <div class="featured-body">
+        <div class="tags">
+          <span class="tag accent">Numerical PDE</span>
+          <span class="tag blue">Traffic Flow</span>
+          <span class="tag yellow">In progress</span>
+        </div>
+        <h2>Shock-wave formation &amp; the LWR conservation law.</h2>
+        <p>
+          A first-order Godunov finite-volume scheme for the
+          Lighthill–Whitham–Richards scalar conservation law, validated
+          against vehicle trajectories from the <b>NGSIM US-101</b> dataset.
+          The aim: characterize shock formation and rarefaction structure
+          under realistic fundamental-diagram fits, and quantify model
+          fidelity in the regimes where the macroscopic continuum
+          assumption is most strained.
+        </p>
+        <div class="meta-row">
+          <div class="mr-cell">Method<b>Godunov FV</b></div>
+          <div class="mr-cell">Data<b>NGSIM US-101</b></div>
+          <div class="mr-cell">Course<b>MA 8213</b></div>
+          <div class="mr-cell">Status<b>in progress · drafting</b></div>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 4px; flex-wrap: wrap;">
+          <a class="btn primary" href="research.html#lwr">More on this →</a>
+          <a class="btn" href="research.html">All projects</a>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============== NOW + MANUSCRIPTS ============== -->
+  <section class="split">
+    <aside class="now-card">
+      <div class="now-head">
+        <div class="eyebrow">Where I am</div>
+        <span class="now-stamp">2nd-year PhD</span>
+      </div>
+      <h3>The shape of the year.</h3>
+      <ul class="now-list">
+        <li class="now-item">
+          <span class="marker">PHD</span>
+          <span class="body">Mississippi State, <b>Applied Math &amp; Statistics</b> — advised by Prof. Seongjai Kim.</span>
+        </li>
+        <li class="now-item">
+          <span class="marker">TA</span>
+          <span class="body">Graduate Teaching Assistant at the <b>MSU Math Domain</b> — one-on-one tutoring and lecture support.</span>
+        </li>
+        <li class="now-item">
+          <span class="marker">SU26</span>
+          <span class="body">Summer 2026: confirming a <b>summer internship</b> with Envision by WorldStrides.</span>
+        </li>
+        <li class="now-item">
+          <span class="marker">READ</span>
+          <span class="body">Bressan, <b>Hyperbolic Systems of Conservation Laws</b> — for the parts of LWR my scheme isn't quite getting right.</span>
+        </li>
+        <li class="now-item">
+          <span class="marker">CODE</span>
+          <span class="body"><a href="https://github.com/Governor6191" target="_blank" rel="noopener" style="font-family: var(--mono); background: var(--ink); color: var(--accent-3); padding: 2px 6px; border-radius: 3px; font-size: 13px;">github.com/Governor6191</a> · Python, MATLAB, QGIS.</span>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="pubs-preview">
+      <div class="eyebrow" style="margin-bottom: 12px;">In preparation</div>
+      <h3>Manuscripts &amp; theses.</h3>
+      <p>No peer-reviewed papers yet — I'm in the second year. Below are the four manuscripts in active preparation, plus the undergraduate thesis they extend.</p>
+
+      <div class="pub-row">
+        <span class="pub-year">prep</span>
+        <div>
+          <div class="pub-title">Shock-wave formation in traffic flow via the LWR conservation law.</div>
+          <div class="pub-venue">Drafting · with NGSIM US-101</div>
+        </div>
+        <span class="pub-link">→</span>
+      </div>
+      <div class="pub-row">
+        <span class="pub-year">prep</span>
+        <div>
+          <div class="pub-title">Optimal routing of accident victims: ACO vs. ALNS vs. stochastic programming.</div>
+          <div class="pub-venue">Journal extension of KNUST thesis · drafting</div>
+        </div>
+        <span class="pub-link">→</span>
+      </div>
+      <div class="pub-row">
+        <span class="pub-year">prep</span>
+        <div>
+          <div class="pub-title">α-Test framework — extension and applications.</div>
+          <div class="pub-venue">With Prof. Seongjai Kim · two manuscripts in preparation</div>
+        </div>
+        <span class="pub-link">→</span>
+      </div>
+      <div class="pub-row">
+        <span class="pub-year">prep</span>
+        <div>
+          <div class="pub-title">Edge detection — conference paper.</div>
+          <div class="pub-venue">Image processing · venue TBD</div>
+        </div>
+        <span class="pub-link">→</span>
+      </div>
+      <div class="pub-row">
+        <span class="pub-year">2023</span>
+        <div>
+          <div class="pub-title">Optimal Routing of Accident Victims Using Ant Colony Optimization.</div>
+          <div class="pub-venue">Undergraduate thesis · Department of Mathematics, KNUST</div>
+        </div>
+        <span class="pub-link">→</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== FOCUS PANELS ============== -->
+  <section class="focus">
+    <div class="panel equation">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 16px;">The equation</div>
+        <h4>The simplest equation that already knows about traffic jams.</h4>
+      </div>
+      <div class="equation-display">
+        ∂<sub>t</sub>ρ <span class="op">+</span> ∂<sub>x</sub>(ρ·v(ρ)) <span class="op">=</span> 0
+      </div>
+      <div class="links">
+        <a href="research.html#lwr">Why this one →</a>
+      </div>
+    </div>
+
+    <div class="panel reading">
+      <div>
+        <div class="eyebrow" style="margin-bottom: 16px;">Currently reading</div>
+        <h4>Bressan, <em style="font-style: italic;">Hyperbolic Systems of Conservation Laws.</em></h4>
+        <p style="margin-top: 16px; color: var(--ink-2);">
+          For the parts of LWR my numerical scheme keeps almost-but-not-quite
+          getting right. Working through the <b>front-tracking</b> proofs
+          for BV solutions.
+        </p>
+      </div>
+      <div class="links" style="margin-top: 24px;">
+        <a href="research.html">All projects →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== CLOSER ============== -->
+  <section class="closer">
+    <div class="eyebrow">Open to collaboration</div>
+    <h2>Looking for Summer&nbsp;'26 <em>research &amp; industry roles.</em></h2>
+    <p>
+      Quant research, data analytics, applied ML, scientific computing, or
+      anything that lets a mathematician get their hands dirty with real
+      data. Open to Summer&nbsp;2026 internships.
+    </p>
+    <div class="actions">
+      <a class="btn primary" href="contact.html">Get in touch →</a>
+      <a class="btn" href="cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF)</a>
+    </div>
+  </section>
+
+</main>
+
+<div id="foot-mount"></div>
+
+<script src="chrome.js"></script>
+<script>
+  const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function prefersReducedMotion() {
+    return reduceMotionQuery.matches;
+  }
+
+  /* LWR shock-wave canvas */
+  function lwrCanvas() {
+    const canvas = document.getElementById('lwr-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      const r = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = r.width * dpr;
+      canvas.height = r.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+
+    let t0 = performance.now();
+    const reduceMotion = prefersReducedMotion();
+    window.addEventListener('resize', () => {
+      resize();
+      if (reduceMotion) frame(t0);
+    });
+
+    function frame(now) {
+      const t = (now - t0) / 1000;
+      const w = canvas.getBoundingClientRect().width;
+      const h = canvas.getBoundingClientRect().height;
+      ctx.clearRect(0, 0, w, h);
+
+      // grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 0; y < h; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      // density profiles (shock fronts)
+      const palette = ['#ff5a3c', '#ffd23f', '#1e87ff', '#00b87a', '#6f3df5', '#ff4fa6'];
+      for (let i = 0; i < 6; i++) {
+        const phase = (t * 0.35 + i * 1.1) % 5;
+        const x0 = (phase / 5) * (w + 200) - 100;
+        const amp = 70 + i * 6;
+
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 2) {
+          const dx = x - x0;
+          let y = h * 0.7;
+          const front = 1 / (1 + Math.exp(0.07 * dx));
+          y -= amp * front;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = palette[i];
+        ctx.lineWidth = i === 2 ? 2.5 : 1.5;
+        ctx.globalAlpha = i === 2 ? 1 : 0.6;
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+
+      // characteristics
+      ctx.strokeStyle = 'rgba(255,210,63,0.15)';
+      ctx.lineWidth = 1;
+      for (let i = -10; i < 20; i++) {
+        ctx.beginPath();
+        const x = i * 60 + (t * 30) % 60;
+        ctx.moveTo(x, h);
+        ctx.lineTo(x + 200, 0);
+        ctx.stroke();
+      }
+
+      // labels
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = 'bold 11px JetBrains Mono';
+      ctx.fillText('ρ(x, t)', 16, 24);
+      ctx.fillText('x →', w - 50, h - 16);
+
+      if (!reduceMotion) requestAnimationFrame(frame);
+    }
+    if (reduceMotion) frame(t0);
+    else requestAnimationFrame(frame);
+  }
+
+  setTimeout(() => { lwrCanvas(); }, 100);
+</script>
+</body>
+</html>

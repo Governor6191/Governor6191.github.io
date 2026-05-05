@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Research — Sylvester Arhin Mensah</title>
+<meta name="description" content="Research projects on traffic flow, EMS routing, image processing, and spatial public health — by Sylvester Arhin Mensah." />
+<link rel="stylesheet" href="shared.css" />
+<style>
+  /* ===== project card ===== */
+  .project {
+    border: 1.5px solid var(--ink);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    background: var(--bg-2);
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .project:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .project.completed { grid-template-columns: 1fr 1.05fr; }
+  .project.completed .proj-media { order: 2; }
+  .project.completed .proj-body { order: 1; }
+
+  .proj-media {
+    position: relative;
+    background: var(--bg);
+    min-height: 440px;
+    display: flex; flex-direction: column;
+    border-right: 1.5px solid var(--ink);
+  }
+  .project.completed .proj-media { border-right: 0; border-left: 1.5px solid var(--ink); }
+
+  .proj-canvas-wrap {
+    flex: 1;
+    position: relative;
+    background: var(--bg-ink);
+    overflow: hidden;
+  }
+  .proj-canvas-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .proj-placeholder {
+    flex: 1;
+    background:
+      repeating-linear-gradient(135deg, rgba(22,22,29,0.06) 0 12px, transparent 12px 24px),
+      var(--bg-3);
+    display: grid; place-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    position: relative;
+  }
+  .proj-placeholder::before {
+    content: '';
+    position: absolute; inset: 16px;
+    border: 1px dashed var(--rule-2);
+    pointer-events: none;
+  }
+
+  .proj-meta-row {
+    display: flex; gap: 0;
+    border-top: 1.5px solid var(--ink);
+    background: var(--bg-3);
+  }
+  .proj-meta-row .vm-cell {
+    flex: 1;
+    padding: 14px 18px;
+    border-right: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .proj-meta-row .vm-cell:last-child { border-right: 0; }
+  .proj-meta-row .vm-cell b {
+    display: block;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 4px;
+  }
+
+  .proj-body {
+    padding: 40px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .proj-status {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .proj-status .stat-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .proj-status.active .stat-dot { background: var(--accent-2); box-shadow: 0 0 8px var(--accent-2); }
+  .proj-status.draft .stat-dot { background: var(--accent-3); }
+  .proj-status.archived .stat-dot { background: var(--ink-3); }
+
+  .proj-body h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .proj-body p {
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .meta-dl {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 8px 16px;
+    padding: 16px 0;
+    border-top: 1.5px solid var(--rule);
+    border-bottom: 1.5px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .meta-dl dt { color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; }
+  .meta-dl dd { color: var(--ink); }
+
+  .actions-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+  /* group heading */
+  .group-head {
+    margin: 96px 0 32px;
+    display: flex; align-items: baseline; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .group-head h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 40px;
+    letter-spacing: -0.01em;
+  }
+  .group-head h3 em { color: var(--accent-text); font-style: italic; }
+  .group-count {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  /* honest-disclosure note */
+  .candor {
+    margin: 0 0 64px;
+    padding: 20px 24px;
+    background: var(--bg-3);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 70ch;
+  }
+  .candor b { color: var(--ink); }
+
+  @media (max-width: 980px) {
+    .project, .project.completed { grid-template-columns: 1fr; }
+    .project.completed .proj-media { order: 1; border-left: 0; border-bottom: 1.5px solid var(--ink); }
+    .proj-media { min-height: 320px; border-right: 0; border-bottom: 1.5px solid var(--ink); }
+  }
+</style>
+</head>
+<body data-page="research">
+<div id="nav-mount"></div>
+
+<main class="wrap">
+
+  <div class="page-hero">
+    <div class="eyebrow">Research &amp; projects</div>
+    <h1>Methods, models,<br/>and <em>moving parts.</em></h1>
+    <p class="lede">
+      A working catalog of what I'm building. Each entry lists the
+      mathematical core, the data source, and the current state. Status
+      flags are honest — <b>active</b> means under my keyboard right now;
+      <b>drafting</b> means a manuscript is in progress; <b>archived</b>
+      means it's done and I'm not actively returning to it.
+    </p>
+  </div>
+
+  <p class="candor">
+    <b>A note on honesty.</b> I'm a second-year PhD student. None of the
+    work below has been peer-reviewed yet — four of the five projects are
+    in active preparation, and one is a finished but unpublished
+    undergraduate-era report. I've kept the framing accurate rather than
+    inflated; please reach out if you'd like to see drafts or code.
+  </p>
+
+  <!-- ============== ACTIVE ============== -->
+  <div class="group-head">
+    <h3>Currently <em>in motion.</em></h3>
+    <span class="group-count">4 active</span>
+  </div>
+
+  <!-- ACO — lead -->
+  <article class="project" id="aco">
+    <div class="proj-media">
+      <div class="proj-placeholder">
+        Kumasi network · ACO route map<br/>(figure pending)
+      </div>
+      <div class="proj-meta-row">
+        <div class="vm-cell">Method<b>ACO + ALNS</b></div>
+        <div class="vm-cell">Network<b>Kumasi · OSMnx</b></div>
+        <div class="vm-cell">Tools<b>Python, QGIS</b></div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-status draft"><span class="stat-dot"></span> Active · drafting</div>
+      <h2>Optimal routing of accident victims: ACO, ALNS, and the Kumasi road network.</h2>
+      <div class="proj-tags">
+        <span class="tag accent">Optimization</span>
+        <span class="tag blue">EMS routing</span>
+        <span class="tag">Network</span>
+      </div>
+      <p>
+        Ambulance dispatch in resource-constrained cities like Kumasi is
+        bottlenecked less by distance than by hospital capability — a
+        Level-1 trauma case routed to the nearest facility may still need
+        a costly transfer. This project formulates dispatch as a
+        multi-objective routing problem on the real Kumasi road network and
+        benchmarks Ant Colony Optimization against Adaptive Large
+        Neighborhood Search, two-stage stochastic programming, deep
+        reinforcement learning, and a hybrid ACO+ML pipeline. It extends
+        my undergraduate thesis at KNUST (2023), which used ACO alone.
+      </p>
+
+      <dl class="meta-dl">
+        <dt>Origin</dt><dd>KNUST undergraduate thesis (Sept 2023)</dd>
+        <dt>Data</dt><dd>OSMnx road graph + hospital capability roster</dd>
+        <dt>Status</dt><dd>Manuscript in preparation</dd>
+        <dt>Code</dt><dd>Python · private during review</dd>
+      </dl>
+
+      <div class="actions-row">
+        <a class="btn primary" href="contact.html">Request draft →</a>
+        <a class="btn ghost" href="https://github.com/Governor6191" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- LWR -->
+  <article class="project" id="lwr">
+    <div class="proj-media">
+      <div class="proj-canvas-wrap">
+        <canvas id="lwr-anim" aria-label="Animated LWR shock-wave density profiles" role="img"></canvas>
+      </div>
+      <div class="proj-meta-row">
+        <div class="vm-cell">Method<b>Godunov FV</b></div>
+        <div class="vm-cell">Lang<b>Python · NumPy</b></div>
+        <div class="vm-cell">Course<b>MA 8213</b></div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-status active"><span class="stat-dot"></span> Active · drafting</div>
+      <h2>Shock-wave formation in traffic flow via the LWR conservation law.</h2>
+      <div class="proj-tags">
+        <span class="tag accent">Numerical PDE</span>
+        <span class="tag blue">Traffic flow</span>
+        <span class="tag">Hyperbolic</span>
+      </div>
+      <p>
+        A first-order Godunov finite-volume scheme for the
+        Lighthill–Whitham–Richards scalar conservation law, validated
+        against vehicle trajectories from the NGSIM US-101 dataset. The
+        aim is to characterize shock formation and rarefaction structure
+        under realistic fundamental-diagram fits and to quantify model
+        fidelity in regimes where the macroscopic continuum assumption is
+        most strained. Started as a term project for MA 8213 (Applied
+        Mathematics II) and is being extended into a working paper.
+      </p>
+
+      <dl class="meta-dl">
+        <dt>Supervisor</dt><dd>Prof. Sevak Yarahmadian (course)</dd>
+        <dt>Data</dt><dd>NGSIM US-101 trajectory dataset</dd>
+        <dt>Status</dt><dd>LaTeX draft underway · NGSIM preprocessing</dd>
+        <dt>Reading</dt><dd>Bressan, <em>Hyperbolic Systems of Conservation Laws</em></dd>
+      </dl>
+
+      <div class="actions-row">
+        <a class="btn primary" href="contact.html">Get in touch →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- α-Test -->
+  <article class="project" id="alpha-test">
+    <div class="proj-media">
+      <div class="proj-placeholder">
+        α-Test · figure pending
+      </div>
+      <div class="proj-meta-row">
+        <div class="vm-cell">Advisor<b>Prof. S. Kim</b></div>
+        <div class="vm-cell">Outputs<b>2 manuscripts</b></div>
+        <div class="vm-cell">Started<b>2024</b></div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-status draft"><span class="stat-dot"></span> Active · in preparation</div>
+      <h2>The α-Test framework — extension and applications.</h2>
+      <div class="proj-tags">
+        <span class="tag accent">Image processing</span>
+        <span class="tag blue">Numerical methods</span>
+      </div>
+      <p>
+        Joint work with my advisor Prof. Seongjai Kim, extending the
+        α-Test framework developed in his lab. Two manuscripts are
+        planned — a co-authored paper extending the existing α-Test
+        results and a first-author follow-up applying the method to a new
+        problem class. Concrete problem statement and method details are
+        being finalized; this entry will be expanded once the formulation
+        is locked.
+      </p>
+
+      <dl class="meta-dl">
+        <dt>Advisor</dt><dd>Prof. Seongjai Kim, MSU Math &amp; Stats</dd>
+        <dt>Status</dt><dd>Two manuscripts in preparation</dd>
+        <dt>Code</dt><dd>Private</dd>
+      </dl>
+
+      <div class="actions-row">
+        <a class="btn ghost" href="contact.html">Ask about progress →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- Edge detection -->
+  <article class="project" id="edge">
+    <div class="proj-media">
+      <div class="proj-placeholder">
+        Edge detection · figure pending
+      </div>
+      <div class="proj-meta-row">
+        <div class="vm-cell">Domain<b>Image processing</b></div>
+        <div class="vm-cell">Target<b>Conference</b></div>
+        <div class="vm-cell">Status<b>Drafting</b></div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-status draft"><span class="stat-dot"></span> Active · drafting</div>
+      <h2>Edge detection — conference paper.</h2>
+      <div class="proj-tags">
+        <span class="tag accent">Image processing</span>
+        <span class="tag">Edge detection</span>
+      </div>
+      <p>
+        A conference-paper-length write-up on edge-detection methods,
+        prepared alongside the α-Test work. Method, data, and venue are
+        being finalized — placeholder until the abstract is locked.
+      </p>
+
+      <dl class="meta-dl">
+        <dt>Status</dt><dd>Manuscript in preparation</dd>
+        <dt>Venue</dt><dd>Conference · TBD</dd>
+      </dl>
+
+      <div class="actions-row">
+        <a class="btn ghost" href="contact.html">Get notified →</a>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============== ARCHIVE ============== -->
+  <div class="group-head">
+    <h3>From the <em>archive.</em></h3>
+    <span class="group-count">1 completed</span>
+  </div>
+
+  <!-- Typhoid -->
+  <article class="project completed" id="typhoid">
+    <div class="proj-media">
+      <div class="proj-placeholder">
+        Ghana choropleth · typhoid hotspots
+      </div>
+      <div class="proj-meta-row">
+        <div class="vm-cell">Method<b>Hotspot analysis</b></div>
+        <div class="vm-cell">Region<b>Ghana</b></div>
+        <div class="vm-cell">Year<b>2023–24</b></div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-status archived"><span class="stat-dot"></span> Completed · 2024</div>
+      <h2>Spatial analysis of typhoid fever in Ghana.</h2>
+      <div class="proj-tags">
+        <span class="tag accent">Spatial statistics</span>
+        <span class="tag blue">Public health</span>
+        <span class="tag">Hotspot analysis</span>
+      </div>
+      <p>
+        A six-chapter analytical report on the spatial distribution of
+        typhoid fever cases across regions of Ghana. Used choropleth
+        mapping and hotspot/spatial-autocorrelation analysis to identify
+        geographic clusters and surface candidate drivers for further
+        investigation. The final manuscript carries a 42-entry
+        bibliography. Not currently slated for publication; available on
+        request.
+      </p>
+
+      <dl class="meta-dl">
+        <dt>Format</dt><dd>Internal analytical report (Chapters 1–6)</dd>
+        <dt>Figures</dt><dd>4.1–4.9 (choropleth + hotspot maps)</dd>
+        <dt>Year</dt><dd>2024</dd>
+      </dl>
+
+      <div class="actions-row">
+        <a class="btn ghost" href="contact.html">Email for a copy →</a>
+      </div>
+    </div>
+  </article>
+
+</main>
+
+<div id="foot-mount"></div>
+
+<script src="chrome.js"></script>
+<script>
+  /* LWR shock-wave canvas — the only project animation that survives the rewrite.
+     Reduced-motion aware. */
+  const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function setup(id, draw) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      const r = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = r.width * dpr;
+      canvas.height = r.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    let t0 = performance.now();
+    const reduceMotion = reduceMotionQuery.matches;
+    window.addEventListener('resize', () => {
+      resize();
+      if (reduceMotion) tick(t0);
+    });
+    function tick(now) {
+      const w = canvas.getBoundingClientRect().width;
+      const h = canvas.getBoundingClientRect().height;
+      ctx.clearRect(0, 0, w, h);
+      draw(ctx, w, h, (now - t0) / 1000);
+      if (!reduceMotion) requestAnimationFrame(tick);
+    }
+    if (reduceMotion) tick(t0);
+    else requestAnimationFrame(tick);
+  }
+
+  setup('lwr-anim', (ctx, w, h, t) => {
+    // grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+    for (let x = 0; x < w; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    for (let y = 0; y < h; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+    // density profiles (shock fronts)
+    const palette = ['#ff5a3c', '#ffd23f', '#1e87ff', '#00b87a', '#6f3df5', '#ff4fa6'];
+    for (let i = 0; i < 6; i++) {
+      const phase = (t * 0.35 + i * 1.1) % 5;
+      const x0 = (phase / 5) * (w + 200) - 100;
+      const amp = 70 + i * 6;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 2) {
+        const dx = x - x0;
+        let y = h * 0.7;
+        const front = 1 / (1 + Math.exp(0.07 * dx));
+        y -= amp * front;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = palette[i];
+      ctx.lineWidth = i === 2 ? 2.5 : 1.5;
+      ctx.globalAlpha = i === 2 ? 1 : 0.6;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    // characteristics
+    ctx.strokeStyle = 'rgba(255,210,63,0.15)'; ctx.lineWidth = 1;
+    for (let i = -10; i < 20; i++) {
+      ctx.beginPath();
+      const x = i * 60 + (t * 30) % 60;
+      ctx.moveTo(x, h);
+      ctx.lineTo(x + 200, 0);
+      ctx.stroke();
+    }
+    // labels
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = 'bold 11px JetBrains Mono';
+    ctx.fillText('ρ(x, t)', 16, 24);
+    ctx.fillText('x →', w - 50, h - 16);
+  });
+</script>
+</body>
+</html>
