@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>OG card · Sylvester Arhin Mensah</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     OG card — 1200 x 720, rendered via Chrome headless.
+     1200x720 (5:3) accommodates Chrome's ~100px viewport reserve
+     while landing in LinkedIn / Twitter / Facebook spec ranges.
+     Absolute positioning so the layout is pixel-deterministic.
+     ============================================================ */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    width: 1200px; height: 720px;
+    background:
+      radial-gradient(1100px 600px at 95% -10%, rgba(255,90,60,0.20), transparent 60%),
+      radial-gradient(800px 480px at -10% 30%, rgba(30,135,255,0.13), transparent 60%),
+      radial-gradient(600px 400px at 50% 110%, rgba(111,61,245,0.07), transparent 60%),
+      #fbf6ec;
+    color: #16161d;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ===== top row ===== */
+  .mark {
+    position: absolute; top: 56px; left: 64px;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #16161d;
+    color: #fbf6ec;
+    display: grid; place-items: center;
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 36px;
+  }
+  .mark::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    background: #ff5a3c;
+    border-radius: 50%;
+    top: -4px; right: -4px;
+    border: 3px solid #fbf6ec;
+  }
+  .status {
+    position: absolute; top: 64px; right: 64px;
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 12px 22px;
+    border: 2px solid #16161d;
+    border-radius: 999px;
+    background: #00b87a;
+    box-shadow: 4px 4px 0 #16161d;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: #16161d;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .status .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #16161d;
+  }
+
+  /* ===== main ===== */
+  .eyebrow {
+    position: absolute; top: 200px; left: 64px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #b72f1d;
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 36px; height: 2px;
+    background: #ff5a3c;
+  }
+  h1 {
+    position: absolute; top: 240px; left: 64px; right: 64px;
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 100px;
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    color: #16161d;
+  }
+  h1 em {
+    font-style: italic;
+    color: #b72f1d;
+    position: relative;
+    display: inline-block;
+  }
+  h1 em::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0.08em;
+    height: 0.16em;
+    background: #ffd23f;
+    z-index: -1;
+  }
+  .tagline {
+    position: absolute; top: 480px; left: 64px; right: 64px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #4a4a55;
+    max-width: 880px;
+  }
+  .tagline b { color: #16161d; font-weight: 600; }
+
+  /* ===== bot ===== */
+  .bot-rule {
+    position: absolute; left: 64px; right: 64px; top: 612px;
+    height: 2px;
+    background: #16161d;
+  }
+  .author {
+    position: absolute; top: 638px; left: 64px;
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px;
+    line-height: 1;
+    color: #16161d;
+    letter-spacing: -0.01em;
+  }
+  .author em { font-style: italic; color: #b72f1d; }
+  .url {
+    position: absolute; top: 645px; right: 64px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 19px;
+    line-height: 1;
+    font-weight: 600;
+    color: #16161d;
+    letter-spacing: 0.04em;
+  }
+  .url::before {
+    content: '↗ ';
+    color: #1e87ff;
+  }
+</style>
+</head>
+<body>
+
+  <div class="mark">S</div>
+  <div class="status"><span class="dot"></span>Open &middot; Summer '26</div>
+
+  <div class="eyebrow">Applied Mathematics &amp; Optimization</div>
+  <h1>Mathematics for<br/>systems in <em>motion.</em></h1>
+  <p class="tagline">
+    <b>PhD &middot; Mississippi State University.</b>
+    Numerical PDEs, optimization, and image processing &mdash;
+    from traffic flow to ambulance routing in Kumasi.
+  </p>
+
+  <div class="bot-rule"></div>
+  <div class="author">Sylvester Arhin <em>Mensah</em></div>
+  <div class="url">governor6191.github.io</div>
+
+</body>
+</html>
