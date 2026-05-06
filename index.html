@@ -883,11 +883,16 @@
       }
 
       // density profiles (shock fronts)
-      const palette = ['#ff5a3c', '#ffd23f', '#1e87ff', '#00b87a', '#6f3df5', '#ff4fa6'];
-      for (let i = 0; i < 6; i++) {
-        const phase = (t * 0.35 + i * 1.1) % 5;
-        const x0 = (phase / 5) * (w + 200) - 100;
-        const amp = 70 + i * 6;
+      // 9 curves at tight phase offsets so the canvas never lands in a
+      // "all asymptotes, no transitions" snapshot. Cycle length 6,
+      // x0 range extends past both edges so transitions enter and exit
+      // smoothly without ever leaving the canvas in a flat state.
+      const palette = ['#ff5a3c', '#ffd23f', '#1e87ff', '#00b87a', '#6f3df5', '#ff4fa6', '#ff8a73', '#5cc8ff', '#ff4fa6'];
+      const N = 9;
+      for (let i = 0; i < N; i++) {
+        const phase = (t * 0.4 + i * 0.7) % 6;
+        const x0 = (phase / 6) * (w + 400) - 200;
+        const amp = 60 + (i % 6) * 6;
 
         ctx.beginPath();
         for (let x = 0; x <= w; x += 2) {
@@ -898,21 +903,21 @@
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = palette[i];
-        ctx.lineWidth = i === 2 ? 2.5 : 1.5;
-        ctx.globalAlpha = i === 2 ? 1 : 0.6;
+        ctx.strokeStyle = palette[i % palette.length];
+        ctx.lineWidth = (i === 2 || i === 5) ? 2.5 : 1.5;
+        ctx.globalAlpha = (i === 2 || i === 5) ? 1 : 0.55;
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
 
-      // characteristics
+      // characteristics — denser to add ambient motion
       ctx.strokeStyle = 'rgba(255,210,63,0.15)';
       ctx.lineWidth = 1;
-      for (let i = -10; i < 20; i++) {
+      for (let i = -12; i < 24; i++) {
         ctx.beginPath();
-        const x = i * 60 + (t * 30) % 60;
+        const x = i * 50 + (t * 30) % 50;
         ctx.moveTo(x, h);
-        ctx.lineTo(x + 200, 0);
+        ctx.lineTo(x + 220, 0);
         ctx.stroke();
       }
 
