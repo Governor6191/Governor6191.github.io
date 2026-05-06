@@ -298,42 +298,12 @@
     overflow: hidden;
     background: var(--bg-2);
   }
-  .figure-body {
-    padding: 28px;
-    background:
-      repeating-linear-gradient(135deg, rgba(22,22,29,0.04) 0 12px, transparent 12px 24px),
-      var(--bg-3);
-    min-height: 180px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center;
+  .figure-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #ffffff;
     border-bottom: 1px solid var(--rule);
-  }
-  .figure-body .label {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--ink-2);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    margin-bottom: 8px;
-  }
-  .figure-body .desc {
-    font-family: var(--sans);
-    font-size: 14px;
-    color: var(--ink-2);
-    line-height: 1.55;
-    max-width: 50ch;
-    margin-bottom: 16px;
-  }
-  .figure-body .pdf-link {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--accent-text);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border-bottom: 1px solid currentColor;
-    padding-bottom: 1px;
   }
   .figure-caption {
     padding: 14px 22px;
@@ -344,6 +314,15 @@
     line-height: 1.5;
   }
   .figure-caption b { color: var(--ink); }
+  .figure-caption .pdf-link {
+    margin-left: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-text);
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+  }
 
   /* ===== results table ===== */
   .results-table {
@@ -676,21 +655,20 @@
       ~6,200 fundamental-diagram observations.
     </p>
 
-    <div class="figure">
-      <div class="figure-body">
-        <div class="label">Figure 2 · p. 11</div>
-        <div class="desc">
-          Empirical fundamental diagram from NGSIM US-101 (blue scatter)
-          with Greenshields model fit (red curve). Three panels:
-          speed vs. density, flow vs. density, speed vs. flow.
-        </div>
-        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=11" target="_blank" rel="noopener">View full figure in PDF →</a>
-      </div>
-      <div class="figure-caption">
-        <b>Figure 2.</b> Linear regression of speed on density yields the
-        calibrated Greenshields parameters reported in the at-a-glance table.
-      </div>
-    </div>
+    <figure class="figure">
+      <img class="figure-img"
+           src="figures/fundamental-diagram.png"
+           alt="Three-panel empirical fundamental diagram from NGSIM US-101: blue scatter of per-cell observations overlaid with the red Greenshields model fit. Panel (a) speed vs density with v_max = 34.7 mph and rho_max = 155 veh/mi/lane labeled. Panel (b) flow vs density with critical density rho_c = 77 veh/mi/lane marked. Panel (c) speed vs flow."
+           width="1200" height="353"
+           loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Figure 2.</b> Empirical fundamental diagram from NGSIM US-101
+        (blue scatter) with the calibrated Greenshields model fit (red).
+        Linear regression of speed on density yields v<sub>max</sub> =
+        34.7 mph and ρ<sub>max</sub> = 155 veh/mi/lane.
+        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=11" target="_blank" rel="noopener">PDF p. 11 →</a>
+      </figcaption>
+    </figure>
 
     <p>
       Linear regression of speed on density yields the calibrated parameters
@@ -701,22 +679,20 @@
       almost no truly free-flow traffic.
     </p>
 
-    <div class="figure">
-      <div class="figure-body">
-        <div class="label">Figure 3 · p. 12</div>
-        <div class="desc">
-          Space–time speed contour for US-101. Diagonal red/yellow bands
-          (low speed) propagating from right to left and bottom to top show
-          backward-moving congestion waves — exactly the behavior the LWR
-          theory predicts.
-        </div>
-        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=12" target="_blank" rel="noopener">View full figure in PDF →</a>
-      </div>
-      <div class="figure-caption">
-        <b>Figure 3.</b> The slopes of the diagonal bands give an empirical
-        estimate of observed shock speeds: roughly −10 to −15 mph.
-      </div>
-    </div>
+    <figure class="figure">
+      <img class="figure-img"
+           src="figures/spacetime-contour.png"
+           alt="Space-time speed contour over 45 minutes by 2200 feet of US-101, colored on a red-yellow-green scale from 5 to 50 mph. Diagonal red and dark-red bands sloping downward from upper-right to lower-left mark backward-propagating congestion waves; lighter green regions in the upper-left mark free-flow conditions early in the recording window."
+           width="1200" height="537"
+           loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Figure 3.</b> Space–time speed contour for US-101. The diagonal
+        red bands are backward-propagating congestion waves; their slopes
+        give an empirical estimate of observed shock speeds of roughly
+        −10 to −15 mph — the comparison baseline used in §9.
+        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=12" target="_blank" rel="noopener">PDF p. 12 →</a>
+      </figcaption>
+    </figure>
   </section>
 
   <section id="s4">
@@ -848,23 +824,21 @@
   <section id="s9">
     <h2><span class="secnum">9</span> Results: Simulations vs. Real Data</h2>
 
-    <div class="figure">
-      <div class="figure-body">
-        <div class="label">Figure 4 · p. 25</div>
-        <div class="desc">
-          Godunov scheme solutions for two Riemann problems using
-          NGSIM-calibrated parameters: (a) shock wave with density jump
-          40 → 120 veh/mi propagating backward; (b) rarefaction wave
-          spreading from 120 → 40 veh/mi.
-        </div>
-        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=25" target="_blank" rel="noopener">View full figure in PDF →</a>
-      </div>
-      <div class="figure-caption">
-        <b>Figure 4.</b> The numerical shock travels at the correct speed and
-        the rarefaction has the correct fan structure — verifying that the
-        Godunov solver captures the wave dynamics.
-      </div>
-    </div>
+    <figure class="figure">
+      <img class="figure-img"
+           src="figures/riemann-solutions.png"
+           alt="Two-panel Godunov scheme verification using NGSIM-calibrated parameters. Panel (a) Shock Wave: density profile remains a sharp jump from 40 to 120 veh/mi/lane at four time snapshots (0, 1.2, 3.0, 6.0 min); dashed lines mark the exact shock location. Panel (b) Rarefaction Wave: an initially sharp drop from 120 to 40 veh/mi/lane fans out smoothly into a continuous transition that widens with time."
+           width="1200" height="454"
+           loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Figure 4.</b> Godunov scheme solutions for two Riemann problems
+        with NGSIM-calibrated parameters. (a) The shock travels backward
+        at the correct Rankine–Hugoniot speed without numerical
+        oscillation. (b) The rarefaction has the correct fan structure.
+        Verification that the solver captures both wave types.
+        <a class="pdf-link" href="lwr-ma8213-report.pdf#page=25" target="_blank" rel="noopener">PDF p. 25 →</a>
+      </figcaption>
+    </figure>
 
     <p>
       The headline quantitative comparison is shock speed. Predicted speeds

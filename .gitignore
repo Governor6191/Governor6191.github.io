@@ -18,3 +18,6 @@ Desktop.ini
 # Local secrets
 .env
 .env.local
+
+# Local figure-prep / archive files that shouldn't ship
+*.zip
