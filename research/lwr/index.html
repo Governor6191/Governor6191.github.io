@@ -27,7 +27,7 @@
 <!-- KaTeX for math rendering -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMathInElement(document.body, {delimiters: [{left: '\\\\[', right: '\\\\]', display: true},{left: '\\\\(', right: '\\\\)', display: false}], throwOnError: false});"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
 
 <style>
   /* ============================================================
@@ -1082,6 +1082,22 @@ rhoc   = rhomax / <span class="num">2.0</span>
 
 <script src="/chrome.js"></script>
 <script>
+  // Render LaTeX math via KaTeX once the auto-render script and DOM
+  // are both ready. Runs on window load so deferred scripts have all
+  // finished loading. Delimiters: \[ ... \] for display, \( ... \) for
+  // inline — matches the LaTeX in the body verbatim.
+  window.addEventListener('load', function () {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '\\[', right: '\\]', display: true},
+          {left: '\\(', right: '\\)', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+  });
+
   // Copy BibTeX
   document.getElementById('cite-copy').addEventListener('click', async () => {
     const btn = document.getElementById('cite-copy');
