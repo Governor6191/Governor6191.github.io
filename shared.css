@@ -48,6 +48,8 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
+html { scroll-padding-top: 96px; scroll-behavior: smooth; }
+
 body {
   min-height: 100vh;
   background:

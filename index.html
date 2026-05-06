@@ -153,8 +153,23 @@
     transition: transform .2s, box-shadow .2s;
     position: relative;
     display: flex; flex-direction: column; gap: 14px;
+    color: inherit;
   }
   .doing-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .doing-card::after {
+    content: '↗';
+    position: absolute;
+    top: 20px; right: 22px;
+    font-family: var(--mono);
+    font-size: 18px;
+    line-height: 1;
+    color: var(--ink);
+    opacity: 0.35;
+    transition: opacity .15s, transform .15s;
+    pointer-events: none;
+  }
+  .doing-card:hover::after { opacity: 1; transform: translate(2px, -2px); }
+  .doing-card:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 3px; }
   .doing-card:nth-child(1) { background: var(--accent); color: var(--ink); }
   .doing-card:nth-child(2) { background: var(--accent-2); color: var(--ink); }
   .doing-card:nth-child(3) { background: var(--bg-2); color: var(--ink); }
@@ -615,7 +630,7 @@
     </div>
 
     <div class="now-doing-grid">
-      <article class="doing-card">
+      <a class="doing-card" href="/research/lwr/" aria-label="Read the full LWR research project">
         <span class="doing-tag">Numerical PDE</span>
         <h4>Shock waves &amp; the LWR model.</h4>
         <p>
@@ -624,8 +639,8 @@
           US-101 dataset.
         </p>
         <div class="doing-meta">MA 8213 · Prof. Yarahmadian</div>
-      </article>
-      <article class="doing-card">
+      </a>
+      <a class="doing-card" href="/research.html#aco" aria-label="See the ACO ambulance routing project">
         <span class="doing-tag">Optimization</span>
         <h4>ACO ambulance routing, extended.</h4>
         <p>
@@ -634,8 +649,8 @@
           and a hybrid ACO+ML pipeline on the Kumasi road network.
         </p>
         <div class="doing-meta">Manuscript · drafting</div>
-      </article>
-      <article class="doing-card">
+      </a>
+      <a class="doing-card" href="/research.html#alpha-test" aria-label="See the alpha-Test research project">
         <span class="doing-tag">Image processing</span>
         <h4>The α-Test, applied.</h4>
         <p>
@@ -644,7 +659,7 @@
           first-author follow-up on a new problem class.
         </p>
         <div class="doing-meta">With Prof. Seongjai Kim</div>
-      </article>
+      </a>
     </div>
   </section>
 
