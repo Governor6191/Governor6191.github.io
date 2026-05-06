@@ -882,40 +882,43 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
 
-      // density profiles (shock fronts)
-      // 9 curves at tight phase offsets so the canvas never lands in a
-      // "all asymptotes, no transitions" snapshot. Cycle length 6,
-      // x0 range extends past both edges so transitions enter and exit
-      // smoothly without ever leaving the canvas in a flat state.
-      const palette = ['#ff5a3c', '#ffd23f', '#1e87ff', '#00b87a', '#6f3df5', '#ff4fa6', '#ff8a73', '#5cc8ff', '#ff4fa6'];
-      const N = 9;
+      // density profiles (shock fronts) — tight cluster + dense phases
+      // 12 curves clustered around y = h * 0.65 with only ~40 px of
+      // vertical jitter, phase offset 0.5 so the 12 curves cover the
+      // entire cycle (length 6) at any moment. Wider sigmoid transition
+      // (exp 0.05) makes each curve's "wave" visible across more of
+      // the canvas. Result: a continuous weaving wave field, never a
+      // stack of flat horizontal lines.
+      const palette = ['#ff5a3c', '#ffd23f', '#1e87ff', '#00b87a', '#6f3df5', '#ff4fa6'];
+      const N = 12;
+      const anchorIdx = 5;
       for (let i = 0; i < N; i++) {
-        const phase = (t * 0.4 + i * 0.7) % 6;
+        const baseline = h * 0.65 + (i % 4) * 14 - 18; // ~56 px cluster around 0.65h
+        const phase = (t * 0.45 + i * 0.5) % 6;
         const x0 = (phase / 6) * (w + 400) - 200;
-        const amp = 60 + (i % 6) * 6;
+        const amp = 65 + (i % 5) * 7;
 
         ctx.beginPath();
         for (let x = 0; x <= w; x += 2) {
           const dx = x - x0;
-          let y = h * 0.7;
-          const front = 1 / (1 + Math.exp(0.07 * dx));
-          y -= amp * front;
+          const front = 1 / (1 + Math.exp(0.05 * dx));
+          const y = baseline - amp * front;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
         ctx.strokeStyle = palette[i % palette.length];
-        ctx.lineWidth = (i === 2 || i === 5) ? 2.5 : 1.5;
-        ctx.globalAlpha = (i === 2 || i === 5) ? 1 : 0.55;
+        ctx.lineWidth = i === anchorIdx ? 2.5 : 1.4;
+        ctx.globalAlpha = i === anchorIdx ? 1 : 0.55;
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
 
-      // characteristics — denser to add ambient motion
-      ctx.strokeStyle = 'rgba(255,210,63,0.15)';
+      // characteristics — denser ambient motion
+      ctx.strokeStyle = 'rgba(255,210,63,0.13)';
       ctx.lineWidth = 1;
-      for (let i = -12; i < 24; i++) {
+      for (let i = -14; i < 28; i++) {
         ctx.beginPath();
-        const x = i * 50 + (t * 30) % 50;
+        const x = i * 48 + (t * 30) % 48;
         ctx.moveTo(x, h);
         ctx.lineTo(x + 220, 0);
         ctx.stroke();
