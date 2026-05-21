@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Shock Wave Dynamics in Traffic Flow — Sylvester Arhin Mensah</title>
+<title>Shock Wave Dynamics in Traffic Flow · Sylvester Arhin Mensah</title>
 <meta name="description" content="LWR conservation law calibrated and validated against NGSIM US-101 trajectory data. Course project, MA 8213, Mississippi State University, Spring 2026." />
 <link rel="canonical" href="https://governor6191.github.io/research/lwr/" />
 
@@ -31,7 +31,7 @@
 
 <style>
   /* ============================================================
-     Research detail page — arXiv-style landing.
+     Research detail page. arXiv-style landing.
      Single column, paper-readable line length, math via KaTeX.
      ============================================================ */
 
@@ -516,7 +516,7 @@
     <p>
       This paper investigates the ability of first-order nonlinear conservation laws
       to capture the formation and propagation of traffic congestion waves in real
-      highway data. The Lighthill–Whitham–Richards (LWR) model is derived from
+      highway data. The Lighthill-Whitham-Richards (LWR) model is derived from
       first principles and calibrated using high-resolution vehicle trajectory data
       from the NGSIM US-101 dataset. Empirical fundamental diagrams are constructed
       using Edie's definitions, and the Greenshields model is fitted to obtain
@@ -524,9 +524,9 @@
     </p>
     <p>
       Analytical results from the method of characteristics are used to predict
-      shock formation and propagation, and the Rankine–Hugoniot condition is
+      shock formation and propagation, and the Rankine-Hugoniot condition is
       applied to estimate shock speeds. These predictions are compared with
-      observed congestion waves extracted from space–time speed contours. Despite
+      observed congestion waves extracted from space-time speed contours. Despite
       its simplicity, the LWR model reproduces the qualitative structure of
       backward-propagating traffic shocks and provides reasonable quantitative
       agreement in shock speeds.
@@ -569,7 +569,7 @@
         <li><span class="num">2</span><a href="#s2">Derivation of the LWR Conservation Law</a></li>
         <li><span class="num">3</span><a href="#s3">Calibration from NGSIM Data</a></li>
         <li><span class="num">4</span><a href="#s4">Method of Characteristics &amp; Wave Breaking</a></li>
-        <li><span class="num">5</span><a href="#s5">Shock Waves &amp; Rankine–Hugoniot</a></li>
+        <li><span class="num">5</span><a href="#s5">Shock Waves &amp; Rankine-Hugoniot</a></li>
         <li><span class="num">6</span><a href="#s6">Riemann Problems</a></li>
         <li><span class="num">7</span><a href="#s7">Burgers' Equation &amp; Viscous Shocks</a></li>
         <li><span class="num">8</span><a href="#s8">Godunov Finite Volume Scheme</a></li>
@@ -590,7 +590,7 @@
     <p class="lede">
       Traffic jams behave like shock waves. The same nonlinear conservation laws
       that govern shock formation in gas dynamics also describe how congestion
-      forms and propagates along a highway — a fact first established by
+      forms and propagates along a highway, a fact first established by
       Lighthill and Whitham (1955) and independently by Richards (1956).
     </p>
     <p>
@@ -599,7 +599,7 @@
       numerical simulation and comparison with real data. The work covers
       (i) deriving the LWR conservation law from first principles,
       (ii) using the method of characteristics to predict shock formation,
-      (iii) applying the Rankine–Hugoniot jump condition to compute shock
+      (iii) applying the Rankine-Hugoniot jump condition to compute shock
       speeds, (iv) studying Burgers' equation as a model for the internal
       structure of the shock, (v) implementing a Godunov-type finite volume
       scheme, and (vi) calibrating and validating the model on the NGSIM US-101
@@ -619,7 +619,7 @@
       \[ \frac{\partial \rho}{\partial t} + \frac{\partial q}{\partial x} = 0. \]
     </div>
     <p>
-      The model is closed by the equilibrium assumption \(q = q(\rho)\) — the
+      The model is closed by the equilibrium assumption \(q = q(\rho)\), the
       <em>fundamental diagram</em>. Substituting the simplest such closure, the
       Greenshields model \(v(\rho) = v_{\max}(1 - \rho/\rho_{\max})\), gives the
       LWR equation:
@@ -651,7 +651,7 @@
     <p>
       Microscopic trajectories are converted to macroscopic density, flow, and
       space-mean speed using <b>Edie's generalized definitions</b> on a
-      space–time grid of 50 m × 30 s cells. Per-lane aggregation produces
+      space-time grid of 50 m × 30 s cells. Per-lane aggregation produces
       ~6,200 fundamental-diagram observations.
     </p>
 
@@ -675,7 +675,7 @@
       <b>v<sub>max</sub> = 34.7 mph</b>, <b>ρ<sub>max</sub> = 155 veh/mi/lane</b>,
       <b>ρ<sub>c</sub> = 77 veh/mi/lane</b>, and <b>q<sub>max</sub> = 1,342
       veh/hr/lane</b>. The lower-than-posted free-flow speed reflects the fact
-      that the data was collected during peak congestion — the dataset contains
+      that the data was collected during peak congestion. The dataset contains
       almost no truly free-flow traffic.
     </p>
 
@@ -686,10 +686,10 @@
            width="1200" height="537"
            loading="lazy" />
       <figcaption class="figure-caption">
-        <b>Figure 3.</b> Space–time speed contour for US-101. The diagonal
+        <b>Figure 3.</b> Space-time speed contour for US-101. The diagonal
         red bands are backward-propagating congestion waves; their slopes
         give an empirical estimate of observed shock speeds of roughly
-        −10 to −15 mph — the comparison baseline used in §9.
+        −10 to −15 mph, the comparison baseline used in §9.
         <a class="pdf-link" href="lwr-ma8213-report.pdf#page=12" target="_blank" rel="noopener">PDF p. 12 →</a>
       </figcaption>
     </figure>
@@ -703,24 +703,24 @@
       of the initial profile propagates at its own wave speed
       \(c(\rho_0(\xi))\). Characteristics from regions of differing density
       can collide. When they do, the profile steepens until it becomes
-      multi-valued — the <em>gradient catastrophe</em>. The breaking time is
+      multi-valued, the <em>gradient catastrophe</em>. The breaking time is
     </p>
     <div class="math-display">
       \[ t_b = \min_\xi \left\{ -\frac{1}{q''(\rho_0(\xi))\,\rho_0'(\xi)} \;:\; q''(\rho_0(\xi))\,\rho_0'(\xi) < 0 \right\}. \]
     </div>
     <p>
       For Greenshields, \(q'' < 0\), so wave breaking occurs whenever the
-      initial density is increasing — the physically intuitive case of light
+      initial density is increasing, the physically intuitive case of light
       traffic catching up to heavy traffic. A shock forms at the boundary.
     </p>
   </section>
 
   <section id="s5">
-    <h2><span class="secnum">5</span> Shock Waves &amp; the Rankine–Hugoniot Condition</h2>
+    <h2><span class="secnum">5</span> Shock Waves &amp; the Rankine-Hugoniot Condition</h2>
     <p>
       At a discontinuity, the classical PDE breaks down and we look for weak
       solutions that satisfy the conservation law in integral form. The
-      Rankine–Hugoniot jump condition relates the shock speed \(\dot s\) to the
+      Rankine-Hugoniot jump condition relates the shock speed \(\dot s\) to the
       jump in density and flux across it:
     </p>
     <div class="math-display">
@@ -729,16 +729,16 @@
     <p>
       For Greenshields with left state \(\rho_l\) and right state \(\rho_r\),
       a direct computation gives \(\dot s = v_{\max}(1 - (\rho_l + \rho_r)/\rho_{\max})\).
-      The shock moves <b>backward</b> whenever \(\rho_l + \rho_r > \rho_{\max}\)
-      — the physical signature of a backward-propagating traffic jam.
+      The shock moves <b>backward</b> whenever \(\rho_l + \rho_r > \rho_{\max}\),
+      the physical signature of a backward-propagating traffic jam.
     </p>
     <p>
-      The Rankine–Hugoniot condition by itself does not select a unique
+      The Rankine-Hugoniot condition by itself does not select a unique
       solution. The <b>Lax entropy condition</b> picks the physically
       admissible one: a shock from \(\rho_l\) to \(\rho_r\) is admissible iff
       \(c(\rho_l) > \dot s > c(\rho_r)\). For the concave Greenshields flux
       this is equivalent to requiring \(\rho_l < \rho_r\) (density increases
-      across the shock — the back of a jam, not the front).
+      across the shock: the back of a jam, not the front).
     </p>
   </section>
 
@@ -751,25 +751,25 @@
     </p>
     <ul>
       <li>
-        <b>Scenario 1 — Approaching a jam.</b> Light traffic
+        <b>Scenario 1: Approaching a jam.</b> Light traffic
         (\(\rho_L = 40\)) meets heavy congestion (\(\rho_R = 120\)).
         A backward-propagating shock forms with speed
         \(\dot s = -1.1\) mph: drivers cruising at 25.7 mph encounter the
         shock and abruptly slow to 7.8 mph.
       </li>
       <li>
-        <b>Scenario 2 — Green light release.</b> Queued traffic
+        <b>Scenario 2: Green light release.</b> Queued traffic
         (\(\rho_L = 120\)) ahead of free road (\(\rho_R = 40\)) produces a
         rarefaction fan: a smooth, continuous transition spreading between
         wave speeds \(c(120) = -19.0\) and \(c(40) = +16.8\) mph. Cars
         accelerate gradually as the queue dissipates.
       </li>
       <li>
-        <b>Scenario 3 — Bottleneck merging.</b> A three-piece initial
+        <b>Scenario 3: Bottleneck merging.</b> A three-piece initial
         condition (50 / 110 / 50 veh/mi) generates a shock at the back
         of the congested region (\(\dot s = -1.5\) mph) and a rarefaction
         at the front. The congested region slowly drifts backward and
-        spreads — exactly the pattern observed near on-ramp merging zones.
+        spreads, exactly the pattern observed near on-ramp merging zones.
       </li>
     </ul>
   </section>
@@ -777,7 +777,7 @@
   <section id="s7">
     <h2><span class="secnum">7</span> Burgers' Equation &amp; the Viscous Shock Structure</h2>
     <p>
-      Real traffic shocks are not infinitely sharp — there is always a
+      Real traffic shocks are not infinitely sharp. There is always a
       transition zone where density changes rapidly but continuously. Adding
       a small diffusion term to the LWR equation gives <b>Burgers' equation</b>,
     </p>
@@ -788,10 +788,10 @@
       whose traveling-wave solution is a hyperbolic-tangent profile of width
       \(\delta = 4D/(u_l - u_r)\). The shock thickens with diffusion \(D\) and
       sharpens with shock strength. In the inviscid limit \(D \to 0\), the
-      tanh profile collapses to the discontinuous LWR shock — confirming that
+      tanh profile collapses to the discontinuous LWR shock, confirming that
       the LWR shock is the correct limiting behavior. Physically, the
       "diffusion" arises from driver anticipation and finite vehicle length;
-      transition zones at the back of real jams are typically 100–300 m wide.
+      transition zones at the back of real jams are typically 100-300 m wide.
     </p>
   </section>
 
@@ -833,7 +833,7 @@
       <figcaption class="figure-caption">
         <b>Figure 4.</b> Godunov scheme solutions for two Riemann problems
         with NGSIM-calibrated parameters. (a) The shock travels backward
-        at the correct Rankine–Hugoniot speed without numerical
+        at the correct Rankine-Hugoniot speed without numerical
         oscillation. (b) The rarefaction has the correct fan structure.
         Verification that the solver captures both wave types.
         <a class="pdf-link" href="lwr-ma8213-report.pdf#page=25" target="_blank" rel="noopener">PDF p. 25 →</a>
@@ -842,9 +842,9 @@
 
     <p>
       The headline quantitative comparison is shock speed. Predicted speeds
-      from the Rankine–Hugoniot formula with the fitted Greenshields parameters
+      from the Rankine-Hugoniot formula with the fitted Greenshields parameters
       are compared with the observed range estimated from the slopes of the
-      backward-propagating bands in the space–time speed contour:
+      backward-propagating bands in the space-time speed contour:
     </p>
 
     <table class="results-table">
@@ -887,7 +887,7 @@
     <p>
       The model gets the <b>direction</b> right, the <b>order of magnitude</b>
       right, and the <b>qualitative structure</b> of backward-propagating
-      congestion waves clearly visible — but it consistently <b>underestimates
+      congestion waves clearly visible. But it consistently <b>underestimates
       the magnitude</b> of observed shock speeds. The gap comes partly from
       the Greenshields model's underestimate of the free-flow speed (since
       NGSIM was collected under congested conditions) and partly from
@@ -903,8 +903,8 @@
       (i) the LWR equilibrium assumption ignores driver reaction time and
       anticipation, (ii) treating traffic as a single homogeneous stream
       misses multi-lane interactions and on/off-ramp effects, and (iii) the
-      model has no representation of stochastic driver variability — the main
-      reason for the observed scatter in the empirical fundamental diagram.
+      model has no representation of stochastic driver variability. That is the
+      main reason for the observed scatter in the empirical fundamental diagram.
     </p>
     <p>
       The choice of Greenshields also introduces bias. Because the NGSIM data
@@ -919,8 +919,8 @@
   <section id="s11">
     <h2><span class="secnum">11</span> Conclusions &amp; Future Work</h2>
     <p>
-      The LWR model — derived from a conservation principle and an
-      equilibrium speed-density relationship — produces a first-order
+      The LWR model (derived from a conservation principle and an
+      equilibrium speed-density relationship) produces a first-order
       hyperbolic PDE whose mathematical structure is the same as the
       equations governing shock waves in gas dynamics. Calibrated against
       real US-101 trajectory data and solved with a Godunov scheme, it
@@ -943,7 +943,7 @@
 
   <!-- ============== CODE ============== -->
   <section id="code">
-    <h2><span class="secnum">A–C</span> Code Appendices</h2>
+    <h2><span class="secnum">A-C</span> Code Appendices</h2>
     <p>
       The full implementation lives in three appendices of the report:
       data processing (Appendix A, p. 29), the Godunov solver (Appendix B,
@@ -1011,10 +1011,10 @@ rhoc   = rhomax / <span class="num">2.0</span>
     </div>
 
     <p>
-      Appendix A handles the NGSIM CSV pipeline — loading, lane filtering,
+      Appendix A handles the NGSIM CSV pipeline: loading, lane filtering,
       Edie's-cell aggregation, and the Greenshields linear regression that
       produces the calibrated parameters. Appendix C generates the
-      fundamental-diagram plots (Figure&nbsp;2) and the space–time speed
+      fundamental-diagram plots (Figure&nbsp;2) and the space-time speed
       contour (Figure&nbsp;3). Full listings are in the
       <a href="lwr-ma8213-report.pdf" target="_blank" rel="noopener">report PDF</a>;
       the public Git repository is in preparation.
@@ -1027,16 +1027,16 @@ rhoc   = rhomax / <span class="num">2.0</span>
 
     <ol class="refs">
       <li>J. D. Logan. <em>Applied Mathematics</em>, 4th ed. Wiley, 2013.</li>
-      <li>M. J. Lighthill and G. B. Whitham. "On kinematic waves II. A theory of traffic flow on long crowded roads." <em>Proc. Royal Society A</em>, 229(1178):317–345, 1955.</li>
-      <li>P. I. Richards. "Shock waves on the highway." <em>Operations Research</em>, 4(1):42–51, 1956.</li>
-      <li>B. D. Greenshields. "A study of traffic capacity." <em>Highway Research Board Proceedings</em>, 14:448–477, 1935.</li>
+      <li>M. J. Lighthill and G. B. Whitham. "On kinematic waves II. A theory of traffic flow on long crowded roads." <em>Proc. Royal Society A</em>, 229(1178):317-345, 1955.</li>
+      <li>P. I. Richards. "Shock waves on the highway." <em>Operations Research</em>, 4(1):42-51, 1956.</li>
+      <li>B. D. Greenshields. "A study of traffic capacity." <em>Highway Research Board Proceedings</em>, 14:448-477, 1935.</li>
       <li>Federal Highway Administration. "Next Generation Simulation (NGSIM) Vehicle Trajectories and Supporting Data." U.S. DOT ITS DataHub, 2006. <a href="https://data.transportation.gov" target="_blank" rel="noopener">data.transportation.gov</a>.</li>
       <li>C. F. Daganzo. <em>Fundamentals of Transportation and Traffic Operations</em>. Pergamon, 1997.</li>
       <li>G. B. Whitham. <em>Linear and Nonlinear Waves</em>. Wiley-Interscience, 1974.</li>
       <li>R. Shi, Z. Mo, K. Huang, X. Di, and Q. Du. "Physics-informed deep learning for traffic state estimation based on the traffic flow model and computational graph method." <em>Information Fusion</em>, 101:101971, 2024.</li>
-      <li>Z. S. Qian, J. Li, X. Li, M. Zhang, and H. Wang. "Modeling heterogeneous traffic flow: A pragmatic approach." <em>Transportation Research Part B</em>, 99:183–204, 2017.</li>
-      <li>J. Friedrich, O. Kolb, and S. Göttlich. "A Godunov type scheme for a class of LWR traffic flow models with non-local flux." <em>Networks and Heterogeneous Media</em>, 13(4):531–547, 2018.</li>
-      <li>L. Vacek, C.-W. Shu, and V. Kučera. "Discontinuous Galerkin method with Godunov-like numerical fluxes for traffic flows on networks. Part I: L² stability." <em>Applications of Mathematics</em>, 70:311–339, 2025.</li>
+      <li>Z. S. Qian, J. Li, X. Li, M. Zhang, and H. Wang. "Modeling heterogeneous traffic flow: A pragmatic approach." <em>Transportation Research Part B</em>, 99:183-204, 2017.</li>
+      <li>J. Friedrich, O. Kolb, and S. Göttlich. "A Godunov type scheme for a class of LWR traffic flow models with non-local flux." <em>Networks and Heterogeneous Media</em>, 13(4):531-547, 2018.</li>
+      <li>L. Vacek, C.-W. Shu, and V. Kučera. "Discontinuous Galerkin method with Godunov-like numerical fluxes for traffic flows on networks. Part I: L² stability." <em>Applications of Mathematics</em>, 70:311-339, 2025.</li>
     </ol>
   </section>
 
@@ -1085,7 +1085,7 @@ rhoc   = rhomax / <span class="num">2.0</span>
   // Render LaTeX math via KaTeX once the auto-render script and DOM
   // are both ready. Runs on window load so deferred scripts have all
   // finished loading. Delimiters: \[ ... \] for display, \( ... \) for
-  // inline — matches the LaTeX in the body verbatim.
+  // inline. Matches the LaTeX in the body verbatim.
   window.addEventListener('load', function () {
     if (typeof renderMathInElement === 'function') {
       renderMathInElement(document.body, {

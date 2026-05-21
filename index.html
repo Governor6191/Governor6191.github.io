@@ -3,31 +3,31 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Sylvester Arhin Mensah — Applied Mathematics &amp; Optimization</title>
-<meta name="description" content="Sylvester Arhin Mensah — PhD student in Applied Mathematics and Statistics at Mississippi State, working on numerical PDEs, optimization, and image processing." />
+<title>Sylvester Arhin Mensah · PhD researcher · Applied math, ML, computer vision, scientific computing</title>
+<meta name="description" content="Sylvester Arhin Mensah. PhD researcher in Applied Mathematics &amp; Statistics at Mississippi State, working at the intersection of deep research and real implementation across applied math, machine learning, computer vision, and scientific computing." />
 <link rel="canonical" href="https://governor6191.github.io/" />
 
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Sylvester Arhin Mensah" />
-<meta property="og:title" content="Sylvester Arhin Mensah — Applied Mathematics &amp; Optimization" />
-<meta property="og:description" content="PhD student in Applied Mathematics and Statistics at Mississippi State, working on numerical PDEs, optimization, and image processing." />
+<meta property="og:title" content="Sylvester Arhin Mensah · PhD researcher · Applied math, ML, computer vision, scientific computing" />
+<meta property="og:description" content="PhD researcher in Applied Mathematics &amp; Statistics at Mississippi State, working at the intersection of deep research and real implementation across applied math, machine learning, computer vision, and scientific computing." />
 <meta property="og:url" content="https://governor6191.github.io/" />
 <meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="720" />
 <meta property="og:image:type" content="image/png" />
-<meta property="og:image:alt" content="Sylvester Arhin Mensah — Mathematics for systems in motion. PhD · Mississippi State University." />
+<meta property="og:image:alt" content="Sylvester Arhin Mensah. Mathematics for systems in motion. PhD · Mississippi State University." />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Sylvester Arhin Mensah — Applied Mathematics &amp; Optimization" />
-<meta name="twitter:description" content="PhD student in Applied Mathematics and Statistics at Mississippi State, working on numerical PDEs, optimization, and image processing." />
+<meta name="twitter:title" content="Sylvester Arhin Mensah · PhD researcher · Applied math, ML, computer vision, scientific computing" />
+<meta name="twitter:description" content="PhD researcher in Applied Mathematics &amp; Statistics at Mississippi State, working at the intersection of deep research and real implementation across applied math, machine learning, computer vision, and scientific computing." />
 <meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
-<meta name="twitter:image:alt" content="Sylvester Arhin Mensah — Mathematics for systems in motion. PhD · Mississippi State University." />
+<meta name="twitter:image:alt" content="Sylvester Arhin Mensah. Mathematics for systems in motion. PhD · Mississippi State University." />
 
 <link rel="stylesheet" href="shared.css" />
 <style>
   /* ============================================================
-     Home page — BRIGHT edition
+     Home page. BRIGHT edition.
      ============================================================ */
 
   /* ===== HERO ===== */
@@ -141,7 +141,7 @@
   }
   .now-doing-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
   .doing-card {
@@ -600,15 +600,17 @@
 
     <div class="hero-bottom-row">
       <p class="hero-bio">
-        Hi, I'm <b>Sylvester</b> — a PhD student in Applied Mathematics &amp;
-        Statistics at <b>Mississippi State</b>, working with Prof. Seongjai
-        Kim. My research sits at the intersection of <b>numerical PDEs</b>,
-        <b>optimization</b>, and <b>machine learning</b> — recently, that's
-        meant traffic flow through the LWR conservation law, ambulance
-        routing with Ant Colony Optimization, and edge-detection methods
-        for image processing. I came to this from <b>KNUST</b> in Kumasi,
-        where my undergraduate thesis used ACO to route accident victims
-        through Ghana's hospital network.
+        Hi, I'm <b>Sylvester</b>. PhD researcher in Applied Mathematics &amp;
+        Statistics at <b>Mississippi State</b>, advised by Prof. Seongjai
+        Kim. I work at the intersection of deep research and real
+        implementation, across applied math, <b>machine learning</b>,
+        <b>computer vision</b>, and <b>data science</b>. The math is the
+        foundation; the projects are the evidence I can build what I study.
+        Right now that means a Godunov scheme for the <b>LWR</b>
+        conservation law on NGSIM trajectory data, an <b>ACO</b> extension
+        of my KNUST undergraduate thesis on ambulance routing through
+        Kumasi's hospital network, and ongoing image-processing work in
+        Prof. Kim's lab.
       </p>
       <div class="hero-actions">
         <a class="btn primary" href="research.html">View research →</a>
@@ -640,25 +642,15 @@
         </p>
         <div class="doing-meta">MA 8213 · Prof. Yarahmadian</div>
       </a>
-      <a class="doing-card" href="/research.html#aco" aria-label="See the ACO ambulance routing project">
+      <a class="doing-card" href="/research/aco/" aria-label="See the ACO ambulance routing project">
         <span class="doing-tag">Optimization</span>
         <h4>ACO ambulance routing, extended.</h4>
         <p>
           Extending my KNUST thesis from a single-objective ACO router into a
-          multi-method comparison — ALNS, two-stage stochastic programming,
+          multi-method comparison: ALNS, two-stage stochastic programming,
           and a hybrid ACO+ML pipeline on the Kumasi road network.
         </p>
         <div class="doing-meta">Manuscript · drafting</div>
-      </a>
-      <a class="doing-card" href="/research.html#alpha-test" aria-label="See the alpha-Test research project">
-        <span class="doing-tag">Image processing</span>
-        <h4>The α-Test, applied.</h4>
-        <p>
-          Joint work with Prof. Kim extending the α-Test framework. Two
-          manuscripts planned — one co-authored with the lab, one
-          first-author follow-up on a new problem class.
-        </p>
-        <div class="doing-meta">With Prof. Seongjai Kim</div>
       </a>
     </div>
   </section>
@@ -687,7 +679,7 @@
         <h2>Shock-wave formation &amp; the LWR conservation law.</h2>
         <p>
           A first-order Godunov finite-volume scheme for the
-          Lighthill–Whitham–Richards scalar conservation law, calibrated
+          Lighthill-Whitham-Richards scalar conservation law, calibrated
           and validated against vehicle trajectories from the
           <b>NGSIM US-101</b> dataset. Predicted shock speeds match
           observed backward-propagating congestion waves in direction and
@@ -719,19 +711,19 @@
       <ul class="now-list">
         <li class="now-item">
           <span class="marker">PHD</span>
-          <span class="body">Mississippi State, <b>Applied Math &amp; Statistics</b> — advised by Prof. Seongjai Kim.</span>
+          <span class="body">Mississippi State, <b>Applied Math &amp; Statistics</b>. Advisor: Prof. Seongjai Kim.</span>
         </li>
         <li class="now-item">
           <span class="marker">TA</span>
-          <span class="body">Graduate Teaching Assistant at the <b>MSU Math Domain</b> — one-on-one tutoring and lecture support.</span>
+          <span class="body">Graduate Teaching Assistant at the <b>MSU Math Domain</b>: one-on-one tutoring and lecture support.</span>
         </li>
         <li class="now-item">
           <span class="marker">SU26</span>
-          <span class="body">Summer 2026: confirming a <b>summer internship</b> with Envision by WorldStrides.</span>
+          <span class="body">Summer 2026: <b>Envision by WorldStrides</b>, residential STEM instructor (middle-school cohort).</span>
         </li>
         <li class="now-item">
           <span class="marker">READ</span>
-          <span class="body">Bressan, <b>Hyperbolic Systems of Conservation Laws</b> — for the parts of LWR my scheme isn't quite getting right.</span>
+          <span class="body">Bressan, <b>Hyperbolic Systems of Conservation Laws</b>. For the parts of LWR my scheme isn't quite getting right.</span>
         </li>
         <li class="now-item">
           <span class="marker">CODE</span>
@@ -743,7 +735,7 @@
     <div class="pubs-preview">
       <div class="eyebrow" style="margin-bottom: 12px;">In preparation</div>
       <h3>Manuscripts &amp; theses.</h3>
-      <p>No peer-reviewed papers yet — I'm in the second year. Below are the four manuscripts in active preparation, plus the undergraduate thesis they extend.</p>
+      <p>One completed course-paper artifact, two manuscripts in active preparation, and the undergraduate thesis the ACO work extends. Drafts and code on request.</p>
 
       <a class="pub-row" href="/research/lwr/" style="color: inherit;">
         <span class="pub-year">2026</span>
@@ -753,27 +745,19 @@
         </div>
         <span class="pub-link">Read →</span>
       </a>
-      <div class="pub-row">
+      <a class="pub-row" href="/research/aco/" style="color: inherit;">
         <span class="pub-year">prep</span>
         <div>
           <div class="pub-title">Optimal routing of accident victims: ACO vs. ALNS vs. stochastic programming.</div>
           <div class="pub-venue">Journal extension of KNUST thesis · drafting</div>
         </div>
-        <span class="pub-link">→</span>
-      </div>
+        <span class="pub-link">Read →</span>
+      </a>
       <div class="pub-row">
         <span class="pub-year">prep</span>
         <div>
-          <div class="pub-title">α-Test framework — extension and applications.</div>
+          <div class="pub-title">α-Test framework: extension and applications.</div>
           <div class="pub-venue">With Prof. Seongjai Kim · two manuscripts in preparation</div>
-        </div>
-        <span class="pub-link">→</span>
-      </div>
-      <div class="pub-row">
-        <span class="pub-year">prep</span>
-        <div>
-          <div class="pub-title">Edge detection — conference paper.</div>
-          <div class="pub-venue">Image processing · venue TBD</div>
         </div>
         <span class="pub-link">→</span>
       </div>
@@ -824,9 +808,10 @@
     <div class="eyebrow">Open to collaboration</div>
     <h2>Looking for Summer&nbsp;'26 <em>research &amp; industry roles.</em></h2>
     <p>
-      Quant research, data analytics, applied ML, scientific computing, or
-      anything that lets a mathematician get their hands dirty with real
-      data. Open to Summer&nbsp;2026 internships.
+      Open to Summer&nbsp;2026 internships in applied ML, research
+      engineering, data science, and scientific computing. The fit I'm
+      best at: roles that want a researcher who also ships. Reach out
+      below.
     </p>
     <div class="actions">
       <a class="btn primary" href="contact.html">Get in touch →</a>
@@ -882,7 +867,7 @@
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
 
-      // density profiles (shock fronts) — tight cluster + dense phases
+      // density profiles (shock fronts): tight cluster + dense phases
       // 12 curves clustered around y = h * 0.65 with only ~40 px of
       // vertical jitter, phase offset 0.5 so the 12 curves cover the
       // entire cycle (length 6) at any moment. Wider sigmoid transition
@@ -913,7 +898,7 @@
       }
       ctx.globalAlpha = 1;
 
-      // characteristics — denser ambient motion
+      // characteristics: denser ambient motion
       ctx.strokeStyle = 'rgba(255,210,63,0.13)';
       ctx.lineWidth = 1;
       for (let i = -14; i < 28; i++) {

@@ -3,26 +3,26 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Research — Sylvester Arhin Mensah</title>
-<meta name="description" content="Research projects on traffic flow, EMS routing, image processing, and spatial public health — by Sylvester Arhin Mensah." />
+<title>Research · Sylvester Arhin Mensah</title>
+<meta name="description" content="Research projects on traffic flow, EMS routing, image processing, and spatial public health, by Sylvester Arhin Mensah." />
 <link rel="canonical" href="https://governor6191.github.io/research.html" />
 
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Sylvester Arhin Mensah" />
-<meta property="og:title" content="Research — Sylvester Arhin Mensah" />
+<meta property="og:title" content="Research · Sylvester Arhin Mensah" />
 <meta property="og:description" content="Research projects on traffic flow, EMS routing, image processing, and spatial public health." />
 <meta property="og:url" content="https://governor6191.github.io/research.html" />
 <meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="720" />
 <meta property="og:image:type" content="image/png" />
-<meta property="og:image:alt" content="Sylvester Arhin Mensah — Mathematics for systems in motion. PhD · Mississippi State University." />
+<meta property="og:image:alt" content="Sylvester Arhin Mensah. Mathematics for systems in motion. PhD · Mississippi State University." />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Research — Sylvester Arhin Mensah" />
+<meta name="twitter:title" content="Research · Sylvester Arhin Mensah" />
 <meta name="twitter:description" content="Research projects on traffic flow, EMS routing, image processing, and spatial public health." />
 <meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
-<meta name="twitter:image:alt" content="Sylvester Arhin Mensah — Mathematics for systems in motion. PhD · Mississippi State University." />
+<meta name="twitter:image:alt" content="Sylvester Arhin Mensah. Mathematics for systems in motion. PhD · Mississippi State University." />
 
 <link rel="stylesheet" href="shared.css" />
 <style>
@@ -205,31 +205,29 @@
     <p class="lede">
       A working catalog of what I'm building. Each entry lists the
       mathematical core, the data source, and the current state. Status
-      flags are honest — <b>active</b> means under my keyboard right now;
+      flags are honest: <b>active</b> means under my keyboard right now;
       <b>drafting</b> means a manuscript is in progress; <b>archived</b>
       means it's done and I'm not actively returning to it.
     </p>
   </div>
 
   <p class="candor">
-    <b>A note on honesty.</b> I'm a second-year PhD student. None of the
-    work below has been peer-reviewed yet — four of the five projects are
-    in active preparation, and one is a finished but unpublished
-    undergraduate-era report. I've kept the framing accurate rather than
-    inflated; please reach out if you'd like to see drafts or code.
+    <b>Status.</b> Second-year PhD. The work below spans completed
+    artifacts (LWR course paper, KNUST undergraduate thesis) and
+    manuscripts in active preparation. Drafts and code on request.
   </p>
 
   <!-- ============== ACTIVE ============== -->
   <div class="group-head">
     <h3>Currently <em>in motion.</em></h3>
-    <span class="group-count">4 active</span>
+    <span class="group-count">2 active</span>
   </div>
 
-  <!-- ACO — lead -->
+  <!-- ACO: lead -->
   <article class="project" id="aco">
     <div class="proj-media">
       <div class="proj-placeholder">
-        Kumasi network · ACO route map<br/>(figure pending)
+        Kumasi metropolitan area<br/>5-algorithm benchmark
       </div>
       <div class="proj-meta-row">
         <div class="vm-cell">Method<b>ACO + ALNS</b></div>
@@ -247,14 +245,17 @@
       </div>
       <p>
         Ambulance dispatch in resource-constrained cities like Kumasi is
-        bottlenecked less by distance than by hospital capability — a
+        bottlenecked less by distance than by hospital capability. A
         Level-1 trauma case routed to the nearest facility may still need
-        a costly transfer. This project formulates dispatch as a
-        multi-objective routing problem on the real Kumasi road network and
-        benchmarks Ant Colony Optimization against Adaptive Large
-        Neighborhood Search, two-stage stochastic programming, deep
-        reinforcement learning, and a hybrid ACO+ML pipeline. It extends
-        my undergraduate thesis at KNUST (2023), which used ACO alone.
+        a costly secondary transfer, and the routing-versus-capability
+        trade-off is a systematic source of preventable harm. This project
+        formulates dispatch as a multi-objective routing problem on the
+        real Kumasi road network and benchmarks Ant Colony Optimization
+        against ALNS, two-stage stochastic programming, deep reinforcement
+        learning, and a hybrid ACO+ML pipeline. It extends my undergraduate
+        thesis at KNUST (2023), which used ACO alone. A US Gulf Coast
+        extension, applying the same framework to hurricane-response
+        dispatch, is planned.
       </p>
 
       <dl class="meta-dl">
@@ -265,7 +266,8 @@
       </dl>
 
       <div class="actions-row">
-        <a class="btn primary" href="contact.html">Request draft →</a>
+        <a class="btn primary" href="/research/aco/">Read the full project →</a>
+        <a class="btn" href="contact.html">Request draft</a>
         <a class="btn ghost" href="https://github.com/Governor6191" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
@@ -293,11 +295,11 @@
       </div>
       <p>
         A first-order Godunov finite-volume scheme for the
-        Lighthill–Whitham–Richards scalar conservation law, calibrated and
+        Lighthill-Whitham-Richards scalar conservation law, calibrated and
         validated against vehicle trajectories from the NGSIM US-101 dataset.
         Predicted shock speeds match observed backward-propagating congestion
         waves in direction and order of magnitude. Completed as a term paper
-        for MA 8213 (Applied Mathematics II), Spring 2026 — currently being
+        for MA 8213 (Applied Mathematics II), Spring 2026. Currently being
         extended into a working paper.
       </p>
 
@@ -315,82 +317,31 @@
     </div>
   </article>
 
-  <!-- α-Test -->
-  <article class="project" id="alpha-test">
-    <div class="proj-media">
-      <div class="proj-placeholder">
-        α-Test · figure pending
-      </div>
-      <div class="proj-meta-row">
-        <div class="vm-cell">Advisor<b>Prof. S. Kim</b></div>
-        <div class="vm-cell">Outputs<b>2 manuscripts</b></div>
-        <div class="vm-cell">Started<b>2024</b></div>
-      </div>
-    </div>
-    <div class="proj-body">
-      <div class="proj-status draft"><span class="stat-dot"></span> Active · in preparation</div>
-      <h2>The α-Test framework — extension and applications.</h2>
-      <div class="proj-tags">
-        <span class="tag accent">Image processing</span>
-        <span class="tag blue">Numerical methods</span>
-      </div>
-      <p>
-        Joint work with my advisor Prof. Seongjai Kim, extending the
-        α-Test framework developed in his lab. Two manuscripts are
-        planned — a co-authored paper extending the existing α-Test
-        results and a first-author follow-up applying the method to a new
-        problem class. Concrete problem statement and method details are
-        being finalized; this entry will be expanded once the formulation
-        is locked.
-      </p>
+  <!--
+    ============================================================
+    Slots for forthcoming work. Add new <article class="project">
+    cards here, between LWR and the archive.
 
-      <dl class="meta-dl">
-        <dt>Advisor</dt><dd>Prof. Seongjai Kim, MSU Math &amp; Stats</dd>
-        <dt>Status</dt><dd>Two manuscripts in preparation</dd>
-        <dt>Code</dt><dd>Private</dd>
-      </dl>
+    Coming through summer 2026 (do not surface until each ships
+    complete, with a public repo, results, and at least one figure):
 
-      <div class="actions-row">
-        <a class="btn ghost" href="contact.html">Ask about progress →</a>
-      </div>
-    </div>
-  </article>
+      - Sentinel-1 SAR flood-extent pipeline (CV + DL + remote
+        sensing). Repo: github.com/Governor6191/sar-flood-extent.
+        Trigger to feature: FEMA validation against Hurricane Ida
+        (2021) and Katrina (2005) flood polygons. Likely new
+        flagship once validated.
+      - MLOps deployment of the flood pipeline on AWS.
+      - Medical imaging classifier with uncertainty quantification.
+      - LLM RAG application (optional).
 
-  <!-- Edge detection -->
-  <article class="project" id="edge">
-    <div class="proj-media">
-      <div class="proj-placeholder">
-        Edge detection · figure pending
-      </div>
-      <div class="proj-meta-row">
-        <div class="vm-cell">Domain<b>Image processing</b></div>
-        <div class="vm-cell">Target<b>Conference</b></div>
-        <div class="vm-cell">Status<b>Drafting</b></div>
-      </div>
-    </div>
-    <div class="proj-body">
-      <div class="proj-status draft"><span class="stat-dot"></span> Active · drafting</div>
-      <h2>Edge detection — conference paper.</h2>
-      <div class="proj-tags">
-        <span class="tag accent">Image processing</span>
-        <span class="tag">Edge detection</span>
-      </div>
-      <p>
-        A conference-paper-length write-up on edge-detection methods,
-        prepared alongside the α-Test work. Method, data, and venue are
-        being finalized — placeholder until the abstract is locked.
-      </p>
+    Returning to the active list once they have substance:
 
-      <dl class="meta-dl">
-        <dt>Status</dt><dd>Manuscript in preparation</dd>
-        <dt>Venue</dt><dd>Conference · TBD</dd>
-      </dl>
-
-      <div class="actions-row">
-        <a class="btn ghost" href="contact.html">Get notified →</a>
-      </div>
-    </div>
-  </article>
+      - alpha-Test framework extension with Prof. Seongjai Kim.
+        Two manuscripts planned; pending lockdown of the problem
+        formulation.
+      - Edge-detection conference paper. Pending abstract.
+    ============================================================
+  -->
 
   <!-- ============== ARCHIVE ============== -->
   <div class="group-head">
@@ -407,7 +358,7 @@
       <div class="proj-meta-row">
         <div class="vm-cell">Method<b>Hotspot analysis</b></div>
         <div class="vm-cell">Region<b>Ghana</b></div>
-        <div class="vm-cell">Year<b>2023–24</b></div>
+        <div class="vm-cell">Year<b>2023-24</b></div>
       </div>
     </div>
     <div class="proj-body">
@@ -429,8 +380,8 @@
       </p>
 
       <dl class="meta-dl">
-        <dt>Format</dt><dd>Internal analytical report (Chapters 1–6)</dd>
-        <dt>Figures</dt><dd>4.1–4.9 (choropleth + hotspot maps)</dd>
+        <dt>Format</dt><dd>Internal analytical report (Chapters 1-6)</dd>
+        <dt>Figures</dt><dd>4.1-4.9 (choropleth + hotspot maps)</dd>
         <dt>Year</dt><dd>2024</dd>
       </dl>
 
@@ -446,7 +397,7 @@
 
 <script src="chrome.js"></script>
 <script>
-  /* LWR shock-wave canvas — the only project animation that survives the rewrite.
+  /* LWR shock-wave canvas: the only project animation that survives the rewrite.
      Reduced-motion aware. */
   const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
