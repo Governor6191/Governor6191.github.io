@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ACO Ambulance Routing, Kumasi · Sylvester Arhin Mensah</title>
+<meta name="description" content="Multi-objective ambulance routing on the Kumasi, Ghana road network. Ant Colony Optimization benchmarked against ALNS, two-stage stochastic programming, and deep reinforcement learning. Extends KNUST BSc thesis (2023)." />
+<link rel="canonical" href="https://governor6191.github.io/research/aco/" />
+
+<!-- Open Graph + Twitter -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Optimal Ambulance Routing in Kumasi: ACO and Benchmark Methods" />
+<meta property="og:description" content="Multi-objective ambulance dispatch on the real Kumasi road network. ACO benchmarked against ALNS, stochastic programming, and deep reinforcement learning. Extends KNUST thesis (2023)." />
+<meta property="og:url" content="https://governor6191.github.io/research/aco/" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta property="og:image:type" content="image/png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Optimal Ambulance Routing in Kumasi: ACO and Benchmark Methods" />
+<meta name="twitter:description" content="Multi-objective ambulance dispatch on the Kumasi road network. ACO vs ALNS, stochastic programming, and DRL. Extends KNUST thesis (2023)." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+
+<link rel="stylesheet" href="/shared.css" />
+
+<!-- KaTeX for math rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+
+<style>
+  /* ============================================================
+     Research detail page. arXiv-style landing.
+     Single column, paper-readable line length, math via KaTeX.
+     ============================================================ */
+
+  .paper {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .paper-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    margin: 32px 0 24px;
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s, color .15s;
+  }
+  .paper-back:hover { color: var(--ink); border-color: var(--ink); }
+
+  .paper-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent-text);
+    margin-bottom: 16px;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .paper-eyebrow::before {
+    content: ''; width: 24px; height: 2px; background: var(--accent);
+  }
+  .paper-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--accent-3);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+  }
+  .paper-status.in-prep {
+    background: var(--bg-3);
+    color: var(--ink-3);
+    border-color: var(--rule-2);
+  }
+
+  .paper h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .paper-byline {
+    font-family: var(--sans);
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .paper-affil {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink-2);
+    margin-bottom: 4px;
+  }
+  .paper-meta {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 32px;
+  }
+
+  /* ===== action bar ===== */
+  .actions {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    padding: 16px 0;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    margin-bottom: 40px;
+  }
+  .actions .btn { font-size: 12px; padding: 10px 18px; }
+
+  /* ===== section headings ===== */
+  .paper h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 56px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .paper h2 .secnum {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent-text);
+    margin-right: 12px;
+    letter-spacing: 0.08em;
+  }
+  .paper h3 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink);
+    margin: 32px 0 12px;
+    letter-spacing: -0.005em;
+  }
+
+  /* ===== body prose ===== */
+  .paper p {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+  .paper p.lede {
+    font-size: 17px;
+    color: var(--ink);
+    line-height: 1.65;
+  }
+  .paper a { color: var(--accent-2-text); border-bottom: 1px solid var(--accent-2-text); }
+  .paper a:hover { color: var(--accent-text); border-color: var(--accent-text); }
+  .paper ul, .paper ol {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 18px 22px;
+    color: var(--ink);
+  }
+  .paper li { margin-bottom: 6px; }
+
+  /* ===== abstract block ===== */
+  .abstract {
+    background: var(--bg-2);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin: 0 0 40px;
+  }
+  .abstract h2 {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--accent-text);
+    border-bottom: none;
+    padding-bottom: 0;
+    margin: 0 0 14px;
+  }
+  .abstract p {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .abstract p:last-child { margin-bottom: 0; }
+
+  /* ===== quick-facts grid ===== */
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 0 40px;
+    background: var(--bg-2);
+  }
+  .facts > div {
+    padding: 14px 18px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .facts > div:nth-child(2n) { border-right: 0; }
+  .facts > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .facts dt {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+  }
+  .facts dd {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* ===== TOC ===== */
+  .toc {
+    background: var(--bg-3);
+    border: 1px solid var(--rule-2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 0 0 40px;
+  }
+  .toc h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+    margin: 0 0 12px;
+  }
+  .toc ol {
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 2;
+    column-gap: 32px;
+  }
+  .toc ol li {
+    margin-bottom: 6px;
+    break-inside: avoid;
+  }
+  .toc ol a {
+    color: var(--ink);
+    border: 0;
+  }
+  .toc ol a:hover { color: var(--accent-text); }
+  .toc ol .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-text);
+    margin-right: 8px;
+  }
+
+  /* ===== math display ===== */
+  .math-display {
+    margin: 24px 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+  .katex { font-size: 1.05em !important; }
+  .katex-display { margin: 24px 0 !important; }
+
+  /* ===== figure placeholder ===== */
+  .figure {
+    margin: 32px 0;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .figure-ph {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 280px;
+    background:
+      repeating-linear-gradient(135deg, rgba(22,22,29,0.04) 0 12px, transparent 12px 24px),
+      var(--bg-3);
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .figure-ph::before {
+    content: '';
+    position: absolute; inset: 16px;
+    border: 1px dashed var(--rule-2);
+    pointer-events: none;
+  }
+  .figure-ph .ph-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    position: relative;
+    z-index: 1;
+  }
+  .figure-ph .ph-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+  .figure-caption {
+    padding: 14px 22px;
+    background: var(--bg-2);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .figure-caption b { color: var(--ink); }
+
+  /* ===== in-progress note box ===== */
+  .note-box {
+    background: var(--bg-3);
+    border: 1px solid var(--rule-2);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 24px 0;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .note-box::before {
+    content: 'Status';
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+
+  /* ===== method comparison table ===== */
+  .method-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 14px;
+    margin: 24px 0;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .method-table thead {
+    background: var(--bg-ink);
+    color: var(--bg);
+  }
+  .method-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .method-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    vertical-align: top;
+  }
+  .method-table tbody tr:last-child td { border-bottom: 0; }
+  .method-table tbody tr:nth-child(even) { background: var(--bg-3); }
+
+  /* ===== references ===== */
+  .refs {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    counter-reset: ref;
+    list-style: none;
+    padding-left: 0;
+  }
+  .refs li {
+    counter-increment: ref;
+    padding-left: 36px;
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .refs li::before {
+    content: '[' counter(ref) ']';
+    position: absolute;
+    left: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+  .refs em { font-style: italic; color: var(--ink); }
+
+  /* ===== cite block ===== */
+  .cite {
+    background: var(--bg-2);
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 24px 0 0;
+  }
+  .cite-head {
+    padding: 10px 16px;
+    background: var(--bg-3);
+    border-bottom: 1.5px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cite-copy {
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 0;
+    letter-spacing: 0.1em;
+    transition: background .15s;
+  }
+  .cite-copy:hover { background: var(--accent); color: var(--ink); }
+  .cite-copy.done { background: var(--accent-4); color: var(--ink); }
+  .cite pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink);
+    padding: 16px;
+    overflow-x: auto;
+    margin: 0;
+    background: var(--bg-2);
+  }
+
+  /* ===== footer note ===== */
+  .paper-foot {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 2px solid var(--ink);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .paper-foot a { color: var(--ink); border-bottom: 1px solid var(--ink); }
+
+  @media (max-width: 720px) {
+    .facts { grid-template-columns: 1fr; }
+    .facts > div { border-right: 0; }
+    .toc ol { columns: 1; }
+  }
+</style>
+</head>
+<body data-page="research">
+<div id="nav-mount"></div>
+
+<main class="paper">
+
+  <a class="paper-back" href="/research.html">← Back to research</a>
+
+  <div class="paper-eyebrow">
+    Combinatorial Optimization · Thesis Extension
+    <span class="paper-status in-prep">In preparation</span>
+  </div>
+
+  <h1>Optimal Routing of Accident Victims: Ant Colony Optimization and Benchmark Methods on the Kumasi Road Network.</h1>
+
+  <div class="paper-byline">Sylvester Arhin Mensah</div>
+  <div class="paper-affil">Department of Mathematics &amp; Statistics, Mississippi State University</div>
+  <div class="paper-meta">Extends KNUST BSc Thesis (Sept 2023) · Advisor: Prof. Seongjai Kim · 2024 to present</div>
+
+  <div class="actions">
+    <a class="btn primary" href="/contact.html">Request draft →</a>
+    <a class="btn" href="#s7">KNUST thesis</a>
+    <a class="btn ghost" href="#cite">Cite this</a>
+  </div>
+
+  <!-- ============== ABSTRACT ============== -->
+  <section class="abstract">
+    <h2>Abstract</h2>
+    <p>
+      Emergency medical response in Kumasi, Ghana is severely constrained by the
+      mismatch between vehicle availability, road conditions, and hospital capability
+      tiers. When ambulances are dispatched by proximity alone, Level-1 trauma cases
+      frequently arrive at under-equipped facilities and require costly secondary
+      transfers that worsen outcomes. This project formulates ambulance dispatch as a
+      multi-objective combinatorial optimization problem on the real Kumasi road
+      network, jointly minimizing expected travel time and maximizing the match
+      between patient trauma severity and hospital capability level.
+    </p>
+    <p>
+      Ant Colony Optimization (ACO), in its Ant System formulation, is adapted
+      for the multi-objective dispatch setting and benchmarked against four competing
+      methods: Adaptive Large Neighborhood Search (ALNS), a two-stage stochastic
+      programming formulation that handles demand uncertainty, a deep reinforcement
+      learning policy trained on simulated dispatch scenarios, and a hybrid
+      ACO&nbsp;+&nbsp;machine-learning pipeline in which learned heuristic values
+      replace hand-crafted heuristics in the ACO state-transition rule. The road
+      network is extracted from OpenStreetMap via OSMnx and augmented with hospital
+      capability data.
+    </p>
+    <p>
+      This work extends my 2023 KNUST undergraduate thesis, which applied ACO to a
+      single-objective version of the same problem. The extension introduces a richer
+      bi-objective formulation, a larger and higher-resolution road graph, and a
+      systematic benchmarking study. Manuscript in preparation.
+    </p>
+  </section>
+
+  <!-- ============== AT-A-GLANCE ============== -->
+  <section>
+    <h2><span class="secnum">★</span> At a glance</h2>
+
+    <dl class="facts">
+      <div><dt>Problem class</dt><dd>Multi-objective ambulance routing (VRP variant)</dd></div>
+      <div><dt>Algorithm</dt><dd>Ant Colony Optimization: Ant System (AS)</dd></div>
+      <div><dt>Benchmarks</dt><dd>ALNS · Two-stage stochastic · DRL · ACO+ML</dd></div>
+      <div><dt>Network</dt><dd>Kumasi Metropolitan Area, Ghana · extracted via OSMnx</dd></div>
+      <div><dt>Origin</dt><dd>KNUST BSc thesis · Department of Mathematics · Sept 2023</dd></div>
+      <div><dt>Hospital tiers</dt><dd>Levels 1-3 · trauma and specialty capability classification</dd></div>
+      <div><dt>Tools</dt><dd>Python · OSMnx · NetworkX · QGIS</dd></div>
+      <div><dt>Status</dt><dd>Manuscript in preparation</dd></div>
+    </dl>
+  </section>
+
+  <!-- ============== TOC ============== -->
+  <section>
+    <h2><span class="secnum">§</span> Contents</h2>
+
+    <div class="toc">
+      <h3>Sections</h3>
+      <ol>
+        <li><span class="num">1</span><a href="#s1">Introduction &amp; Motivation</a></li>
+        <li><span class="num">2</span><a href="#s2">Problem Formulation</a></li>
+        <li><span class="num">3</span><a href="#s3">The Kumasi Road Network</a></li>
+        <li><span class="num">4</span><a href="#s4">Ant Colony Optimization</a></li>
+        <li><span class="num">5</span><a href="#s5">Benchmark Methods</a></li>
+        <li><span class="num">6</span><a href="#s6">Experimental Setup</a></li>
+        <li><span class="num">7</span><a href="#s7">Prior Work: KNUST Thesis</a></li>
+        <li><span class="num">8</span><a href="#s8">Conclusions &amp; Future Work</a></li>
+        <li><span class="num">→</span><a href="#refs">References</a></li>
+        <li><span class="num">¶</span><a href="#cite">Cite this work</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============== SECTION 1 ============== -->
+  <section id="s1">
+    <h2><span class="secnum">1</span> Introduction &amp; Motivation</h2>
+    <p class="lede">
+      In a trauma emergency, the first routing decision (which hospital to send the
+      ambulance to) is often the most consequential one. Getting it wrong costs
+      lives.
+    </p>
+    <p>
+      Kumasi is Ghana's second-largest city and the capital of the Ashanti Region,
+      with a rapidly growing metropolitan population and an emergency medical system
+      under significant pressure. The city's hospital network spans facilities of
+      three capability tiers: Level-3 community health posts with limited trauma
+      equipment, Level-2 district hospitals capable of managing moderate injuries,
+      and Level-1 teaching and specialist hospitals equipped for complex trauma and
+      surgical intervention. The Komfo Anokye Teaching Hospital (KATH) is the
+      primary Level-1 facility and one of only two major teaching hospitals in the
+      country.
+    </p>
+    <p>
+      The canonical approach to ambulance dispatch, routing to the nearest or
+      fastest-reachable hospital, ignores capability entirely. For a patient with a
+      high-severity injury, arrival at the nearest Level-3 facility often triggers a
+      secondary inter-facility transfer to KATH, adding 20 to 40 minutes to the
+      effective response time and frequently requiring a second ambulance unit. The
+      net result is worse than a direct dispatch to KATH would have been, even when
+      KATH has a longer drive time. The routing-versus-capability trade-off is a
+      systematic source of preventable harm, and it isn't specific to Kumasi.
+      Emergency-medical systems in well-resourced regions encounter the same problem
+      under load: mass-casualty events, hurricane evacuations, hospital-capacity
+      surges. A US Gulf Coast extension of this framework, applying the same
+      formulation to hurricane-response ambulance dispatch, is planned.
+    </p>
+    <p>
+      This project addresses that gap directly. We formulate ambulance dispatch as a
+      bi-objective optimization problem over the real Kumasi road network, where the
+      two objectives (minimize travel time, maximize capability match) are
+      traded off explicitly. Ant Colony Optimization is our primary method; we
+      benchmark it against four alternative approaches drawn from the metaheuristic,
+      stochastic programming, and machine-learning literatures [1-8].
+    </p>
+  </section>
+
+  <!-- ============== SECTION 2 ============== -->
+  <section id="s2">
+    <h2><span class="secnum">2</span> Problem Formulation</h2>
+    <p>
+      Let \(G = (V, E, w)\) be a directed, weighted road graph extracted from
+      OpenStreetMap for the Kumasi Metropolitan Area, where \(V\) is the set of
+      intersections and road endpoints, \(E \subseteq V \times V\) is the set of
+      directed road segments, and \(w : E \to \mathbb{R}_{+}\) assigns an expected
+      travel time to each segment based on road type and typical congestion.
+    </p>
+    <p>
+      Let \(H \subset V\) denote the set of hospital facility nodes, each annotated
+      with a capability level \(\ell(h) \in \{1, 2, 3\}\) (Level 1 = highest
+      capability). Let \(D \subset V\) be the set of potential accident-scene
+      origins. A dispatch decision for an incoming call at origin \(d \in D\) with
+      trauma severity \(s \in \{1, 2, 3\}\) (severity 1 = most critical) consists
+      of selecting a hospital \(h \in H\) and routing an ambulance along a path
+      \(r \in \mathcal{P}(d, h)\), the set of simple paths from \(d\) to \(h\) in
+      \(G\).
+    </p>
+    <p>
+      The travel time along path \(r = (v_0, v_1, \ldots, v_k)\) is:
+    </p>
+    <div class="math-display">
+      \[ T(r) = \sum_{(v_i,\, v_{i+1}) \in r} w(v_i, v_{i+1}). \]
+    </div>
+    <p>
+      The capability match indicator is:
+    </p>
+    <div class="math-display">
+      \[ M(s, h) = \mathbf{1}\!\left[\ell(h) \leq s\right], \]
+    </div>
+    <p>
+      where \(\mathbf{1}[\cdot]\) is 1 if the condition holds and 0 otherwise. The
+      condition \(\ell(h) \leq s\) means the hospital's level is at least as capable
+      as the trauma severity requires (lower level number = higher capability). A
+      match of 1 indicates that \(h\) can handle the patient's injury category
+      without transfer; a match of 0 means the patient would likely require
+      onward referral.
+    </p>
+    <p>
+      The scalarized bi-objective dispatch problem is:
+    </p>
+    <div class="math-display">
+      \[ \min_{h \in H,\; r \in \mathcal{P}(d,h)} \; w_1 \cdot T(r) - w_2 \cdot M(s, h), \]
+    </div>
+    <p>
+      where \(w_1, w_2 \geq 0\) are weights that reflect the relative importance
+      of speed versus capability. The negative sign on the match term converts the
+      maximization of capability match into a minimization, giving a single
+      composite objective. The choice \(w_1 = w_2 = 1\) treats one minute of travel
+      time and one level of capability mismatch as equally important; varying the
+      ratio traces out the Pareto frontier between the two objectives.
+    </p>
+    <p>
+      In the full multi-scenario version of the problem, calls arrive stochastically
+      and multiple ambulance units must be dispatched simultaneously. Fleet
+      availability and hospital capacity constraints are handled through a
+      two-stage stochastic extension described in §5.
+    </p>
+  </section>
+
+  <!-- ============== SECTION 3 ============== -->
+  <section id="s3">
+    <h2><span class="secnum">3</span> The Kumasi Road Network</h2>
+    <p>
+      The road network is downloaded and constructed using
+      <a href="https://osmnx.readthedocs.io" target="_blank" rel="noopener">OSMnx</a>
+      [4], which queries the OpenStreetMap Overpass API and returns a
+      NetworkX-compatible directed multigraph. The query is bounded to the Kumasi
+      Metropolitan Area administrative polygon. Edge weights are computed from
+      posted speed limits combined with a road-type congestion factor calibrated
+      to give realistic peak-hour travel times; the default OSMnx speed imputation
+      is used as a fallback for unlabeled segments.
+    </p>
+    <p>
+      Hospital nodes are identified by their OSM amenity tags
+      (<code>amenity=hospital</code>, <code>amenity=clinic</code>) and supplemented
+      by field data to assign capability tiers. Level-1 nodes include KATH and a
+      small number of specialist facilities; Level-2 covers district and regional
+      hospitals; Level-3 covers community health centres and polyclinics. The
+      augmented node attributes are stored as a GeoPackage and visualized in QGIS
+      for manual quality control.
+    </p>
+
+    <div class="figure">
+      <div class="figure-ph">
+        <span class="ph-label">Figure 1 · Kumasi OSMnx road network with hospital nodes by capability tier</span>
+        <span class="ph-sub">Figure in preparation. QGIS export pending.</span>
+      </div>
+      <figcaption class="figure-caption">
+        <b>Figure 1.</b> The Kumasi Metropolitan Area road network extracted via OSMnx,
+        with hospital facility nodes colour-coded by capability tier
+        (Level 1 = red, Level 2 = orange, Level 3 = yellow). Edge
+        weight encodes expected peak-hour travel time. This figure will
+        be replaced with the QGIS export once the network annotation is
+        finalized.
+      </figcaption>
+    </div>
+  </section>
+
+  <!-- ============== SECTION 4 ============== -->
+  <section id="s4">
+    <h2><span class="secnum">4</span> Ant Colony Optimization</h2>
+    <p class="lede">
+      ACO is a population-based metaheuristic that mimics the foraging behavior of
+      real ant colonies to find near-optimal paths through a graph [1, 2].
+    </p>
+    <p>
+      In each iteration, a colony of \(m\) artificial ants independently constructs
+      a complete dispatch assignment: selecting, for each simulated call, a
+      hospital and a path through the road network. The construction proceeds
+      sequentially: at each node \(i\), ant \(k\) chooses its next node \(j\)
+      probabilistically according to two types of information: <em>pheromone
+      intensity</em> \(\tau_{ij}\), which encodes the collective historical quality
+      of paths through edge \((i,j)\), and <em>heuristic visibility</em>
+      \(\eta_{ij} = 1/w_{ij}\), the inverse travel time. The state-transition rule is:
+    </p>
+    <div class="math-display">
+      \[ p_{ij}^k = \frac{\bigl[\tau_{ij}\bigr]^\alpha \bigl[\eta_{ij}\bigr]^\beta}{\displaystyle\sum_{l \in \mathcal{N}_i^k} \bigl[\tau_{il}\bigr]^\alpha \bigl[\eta_{il}\bigr]^\beta}, \quad j \in \mathcal{N}_i^k, \]
+    </div>
+    <p>
+      where \(\mathcal{N}_i^k\) is the set of feasible next nodes for ant \(k\) at
+      node \(i\), \(\alpha \geq 0\) controls the influence of pheromone (typically
+      \(\alpha = 1\)), and \(\beta \geq 0\) controls the influence of the heuristic
+      (typically \(\beta \in [2, 5]\)). A larger \(\alpha\) causes ants to exploit
+      historically good paths; a larger \(\beta\) makes the search more greedy with
+      respect to immediate travel time.
+    </p>
+    <p>
+      Once all ants have constructed their solutions, pheromone is updated globally.
+      A fraction \(\rho \in (0,1)\) of the existing pheromone evaporates (preventing
+      indefinite accumulation on suboptimal paths), and each ant deposits pheromone
+      proportional to the quality of its solution:
+    </p>
+    <div class="math-display">
+      \[ \tau_{ij} \leftarrow (1 - \rho)\,\tau_{ij} + \sum_{k=1}^{m} \Delta\tau_{ij}^k, \]
+    </div>
+    <p>
+      where:
+    </p>
+    <div class="math-display">
+      \[ \Delta\tau_{ij}^k = \begin{cases} Q \big/ C^k & \text{if ant } k \text{ traversed edge } (i,j) \text{ in this iteration,} \\ 0 & \text{otherwise.} \end{cases} \]
+    </div>
+    <p>
+      Here \(C^k\) is the composite objective value of ant \(k\)'s full dispatch
+      solution and \(Q\) is a scaling constant. Edges on better solutions receive
+      more pheromone and become more attractive in subsequent iterations, creating a
+      positive feedback loop that concentrates search effort on promising regions of
+      the solution space. The evaporation term ensures that the search does not
+      converge prematurely.
+    </p>
+    <p>
+      For the multi-objective extension, the composite cost \(C^k\) is computed
+      using the scalarized objective from §2. A second run with inverted weights
+      \((w_1, w_2)\) generates the opposite extreme of the Pareto front; intermediate
+      weight vectors fill in the curve between the two extremes.
+    </p>
+
+    <div class="figure">
+      <div class="figure-ph">
+        <span class="ph-label">Figure 2 · ACO pheromone convergence across iterations</span>
+        <span class="ph-sub">Figure in preparation. Benchmarking experiments running.</span>
+      </div>
+      <figcaption class="figure-caption">
+        <b>Figure 2.</b> Best composite objective value vs. iteration number for
+        ACO with three weight configurations (\(w_1 \gg w_2\), balanced, \(w_1 \ll w_2\)).
+        Each curve traces one run of the Ant System on the full Kumasi network.
+        The convergence profile illustrates how the algorithm transitions from
+        exploration to exploitation as pheromone concentrates on high-quality paths.
+      </figcaption>
+    </div>
+  </section>
+
+  <!-- ============== SECTION 5 ============== -->
+  <section id="s5">
+    <h2><span class="secnum">5</span> Benchmark Methods</h2>
+    <p>
+      To situate ACO's performance, four benchmark methods cover the major
+      algorithmic families in combinatorial optimization and machine learning.
+    </p>
+
+    <table class="method-table">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Paradigm</th>
+          <th>Key reference</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>ALNS</b></td>
+          <td>Adaptive Large Neighbourhood Search: iteratively destroys and repairs a dispatch solution using a portfolio of operators; adapts operator selection weights online</td>
+          <td>Ropke &amp; Pisinger [3]</td>
+        </tr>
+        <tr>
+          <td><b>Two-stage stochastic</b></td>
+          <td>First-stage pre-positions ambulances; second-stage recourse handles realized demand. Explicitly models uncertainty in call locations and travel times</td>
+          <td>Birge &amp; Louveaux [6]</td>
+        </tr>
+        <tr>
+          <td><b>Deep RL</b></td>
+          <td>Attention-based pointer network trained via REINFORCE on simulated dispatch episodes. Policy maps (call location, severity, network state) directly to dispatch decisions</td>
+          <td>Nazari et al. [7]</td>
+        </tr>
+        <tr>
+          <td><b>Hybrid ACO+ML</b></td>
+          <td>Replaces the hand-crafted heuristic \(\eta_{ij} = 1/w_{ij}\) in the ACO rule with values predicted by a graph neural network, allowing the heuristic to incorporate hospital capability alongside travel time</td>
+          <td><em>this work</em></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      All five methods are evaluated on the same set of test scenarios generated
+      from the Kumasi network: single-call instances (one accident, select one
+      hospital), multi-call instances (simultaneous calls across the city), and
+      dynamic instances (calls arrive sequentially with partial fleet availability).
+      The primary metrics are composite objective value, gap to a Dijkstra-based
+      lower bound, and computation time.
+    </p>
+  </section>
+
+  <!-- ============== SECTION 6 ============== -->
+  <section id="s6">
+    <h2><span class="secnum">6</span> Experimental Setup</h2>
+    <p>
+      Experiments are run on the full OSMnx graph of the Kumasi Metropolitan Area.
+      Test instances are generated by sampling demand origins uniformly from the
+      road network and assigning trauma severities according to a categorical
+      distribution calibrated to national Ghana road-accident injury statistics.
+      Each method is given a fixed computational budget (wall-clock time) to allow
+      fair comparison across algorithms with different internal iteration structures.
+    </p>
+    <p>
+      ACO hyperparameters (evaporation rate \(\rho\), pheromone influence \(\alpha\),
+      heuristic influence \(\beta\), colony size \(m\), and scaling constant \(Q\))
+      are tuned using a grid search on a held-out validation set of instances not
+      used in benchmarking. The same validation protocol applies to ALNS operator
+      weights and RL policy hyperparameters.
+    </p>
+
+    <div class="note-box">
+      Full benchmarking results are in preparation. This section will be expanded
+      with comparison tables, Pareto-front plots, and an analysis of which method
+      performs best under different network conditions (congestion levels, fleet
+      sizes, trauma severity distributions) once the experiments complete.
+    </div>
+  </section>
+
+  <!-- ============== SECTION 7 ============== -->
+  <section id="s7">
+    <h2><span class="secnum">7</span> Prior Work: KNUST Thesis (2023)</h2>
+    <p>
+      The foundation of this project is my 2023 undergraduate thesis completed in the
+      Department of Mathematics at the Kwame Nkrumah University of Science and
+      Technology (KNUST), Kumasi, Ghana [8]. That work applied ACO to ambulance
+      routing in the Kumasi metropolitan area, demonstrating that an ant-colony
+      approach consistently outperformed a greedy nearest-hospital baseline on
+      simulated dispatch scenarios.
+    </p>
+    <p>
+      The KNUST thesis used a single-objective formulation (minimizing expected
+      travel time) and a simplified road graph derived from the Kumasi metropolitan
+      area. Hospital capability was not modeled; all hospitals were treated as
+      interchangeable end-points. The ACO implementation followed the canonical
+      Ant System algorithm without benchmark comparison. Results showed a roughly
+      18 to 22% reduction in average dispatch travel time relative to the nearest-facility
+      baseline over a set of 200 simulated calls.
+    </p>
+    <p>
+      The current extension addresses three limitations of the thesis:
+      (i) the formulation is upgraded to a bi-objective problem that accounts for
+      hospital capability, the most practically significant driver of secondary
+      transfers; (ii) the road graph is replaced with a complete OSMnx extraction
+      of the metropolitan area, with richer travel-time modeling; and (iii) ACO is
+      benchmarked against a representative set of competing methods, providing
+      empirical grounding for the claim that ACO is a competitive choice for this
+      problem class.
+    </p>
+    <p>
+      The KNUST thesis is not publicly available but can be requested via the
+      <a href="/contact.html">contact page</a>.
+    </p>
+  </section>
+
+  <!-- ============== SECTION 8 ============== -->
+  <section id="s8">
+    <h2><span class="secnum">8</span> Conclusions &amp; Future Work</h2>
+    <p>
+      Ambulance routing in resource-constrained cities is not a pure distance
+      problem. It is a capability-matching problem. Routing an ambulance to the
+      nearest available hospital without regard to trauma severity and facility
+      capability is a systematic source of preventable harm. This project aims to
+      demonstrate that straightforward combinatorial optimization methods, applied to
+      freely available road-network data, can materially improve dispatch outcomes
+      relative to proximity-based baselines, and that ACO is competitive with more
+      complex methods on this problem class.
+    </p>
+    <p>
+      Future directions: real-time traffic updates to edge weights mid-dispatch;
+      ambulance pre-positioning and relocation between calls; extending the framework
+      to other Ghanaian cities (Accra, Tamale) via OSMnx; and a planned US Gulf
+      Coast extension, where the same routing-versus-capability trade-off appears
+      under hurricane-response load and the framework transfers directly. The
+      hybrid ACO+ML branch points toward a learning-to-optimize framework portable
+      across urban contexts where trauma-to-facility matching is the binding
+      constraint on outcomes.
+    </p>
+  </section>
+
+  <!-- ============== REFERENCES ============== -->
+  <section id="refs">
+    <h2><span class="secnum">→</span> References</h2>
+
+    <ol class="refs">
+      <li>M. Dorigo, V. Maniezzo, and A. Colorni. "Ant system: Optimization by a colony of cooperating agents." <em>IEEE Transactions on Systems, Man, and Cybernetics, Part B</em>, 26(1):29-41, 1996.</li>
+      <li>M. Dorigo and T. Stützle. <em>Ant Colony Optimization</em>. MIT Press, Cambridge, MA, 2004.</li>
+      <li>S. Ropke and D. Pisinger. "An adaptive large neighborhood search heuristic for the pickup and delivery problem with time windows." <em>Transportation Science</em>, 40(4):455-472, 2006.</li>
+      <li>G. Boeing. "OSMnx: New methods for acquiring, constructing, analyzing, and visualizing complex street networks." <em>Computers, Environment and Urban Systems</em>, 65:126-139, 2017.</li>
+      <li>L. Brotcorne, G. Laporte, and F. Semet. "Ambulance location and relocation models." <em>European Journal of Operational Research</em>, 147(3):451-463, 2003.</li>
+      <li>J. R. Birge and F. Louveaux. <em>Introduction to Stochastic Programming</em>, 2nd ed. Springer, New York, 2011.</li>
+      <li>M. Nazari, A. Toole, M. Tajbakhsh, and M. Yousefi. "Reinforcement learning for solving the vehicle routing problem." <em>Advances in Neural Information Processing Systems</em> (NeurIPS), 31, 2018.</li>
+      <li>S. A. Mensah. Optimal routing of accident victims using ant colony optimization on the Kumasi road network. BSc thesis, Department of Mathematics, Kwame Nkrumah University of Science and Technology, September 2023. (Unpublished.)</li>
+    </ol>
+  </section>
+
+  <!-- ============== CITE ============== -->
+  <section id="cite">
+    <h2><span class="secnum">¶</span> Cite this work</h2>
+    <p>
+      This is a working manuscript, not yet peer-reviewed. If you wish to
+      reference this project page, the suggested citation is:
+    </p>
+    <p>
+      Mensah, S. A. (2026). <em>Optimal Routing of Accident Victims: Ant Colony
+      Optimization and Benchmark Methods on the Kumasi Road Network.</em>
+      Manuscript in preparation. Mississippi State University.
+    </p>
+
+    <div class="cite">
+      <div class="cite-head">
+        <span>BibTeX</span>
+        <button class="cite-copy" type="button" id="cite-copy" aria-label="Copy BibTeX">Copy</button>
+      </div>
+<pre id="cite-bibtex">@unpublished{mensah2026aco,
+  author = {Mensah, Sylvester Arhin},
+  title  = {Optimal Routing of Accident Victims:
+            {ACO} and Benchmark Methods on the {Kumasi} Road Network},
+  year   = {2026},
+  note   = {Manuscript in preparation. Extends BSc thesis,
+            Kwame Nkrumah University of Science and Technology, 2023},
+  url    = {https://governor6191.github.io/research/aco/}
+}</pre>
+    </div>
+  </section>
+
+  <div class="paper-foot">
+    <a href="/research.html">← All research</a>
+    <span>Last updated May 2026</span>
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+
+<script src="/chrome.js"></script>
+<script>
+  window.addEventListener('load', function () {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '\\[', right: '\\]', display: true},
+          {left: '\\(', right: '\\)', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+  });
+
+  document.getElementById('cite-copy').addEventListener('click', async () => {
+    const btn = document.getElementById('cite-copy');
+    const txt = document.getElementById('cite-bibtex').textContent;
+    try {
+      await navigator.clipboard.writeText(txt);
+      btn.textContent = 'Copied';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1800);
+    } catch (e) {
+      btn.textContent = 'Select all';
+      const range = document.createRange();
+      range.selectNodeContents(document.getElementById('cite-bibtex'));
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  });
+</script>
+</body>
+</html>
