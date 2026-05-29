@@ -323,7 +323,88 @@
 
       The slots below match the summer 2026 plan:
     -->
-    <!-- Project: MLOps deployment of the SAR pipeline on AWS. Add when shipped. -->
+    <!-- ============================================================
+         Project: serverless deployment of the SAR pipeline on AWS
+         ============================================================ -->
+    <article class="proj-feature" id="sar-flood-aws">
+      <div class="pf-status"><span class="stat-dot"></span> Shipped &middot; live API, infrastructure as code, and CI/CD public</div>
+
+      <h2>Serverless SAR flood-extent API on AWS.</h2>
+      <p class="pf-lede">
+        The flood model from the pipeline above, deployed as a live serverless
+        inference API. The whole stack comes up from one cdk deploy.
+      </p>
+      <div class="pf-tags">
+        <span class="tag accent">MLOps</span>
+        <span class="tag blue">Serverless</span>
+        <span class="tag green">Infrastructure as code</span>
+      </div>
+      <div class="pf-tags" style="margin-top: 10px;">
+        <span class="tag">AWS CDK</span>
+        <span class="tag">SageMaker Serverless</span>
+        <span class="tag">Lambda</span>
+        <span class="tag">API Gateway</span>
+        <span class="tag">DynamoDB</span>
+        <span class="tag">Docker</span>
+        <span class="tag">GitHub Actions</span>
+      </div>
+
+      <p class="body">
+        You POST a Sentinel-1 scene and get back a flood mask and a GeoJSON of
+        flood polygons. Inference can outrun API Gateway's 29 second limit, so the
+        API is asynchronous: submit a job, poll for status, download the result
+        from a presigned URL. SageMaker Serverless Inference runs the model and
+        scales to zero, so idle cost is zero.
+      </p>
+
+      <figure class="figure">
+        <img class="figure-img"
+             src="assets/images/sar_flood_aws_architecture.png"
+             alt="Architecture diagram. A caller uploads a scene to S3 through a presigned URL, then submits a job to an API Gateway REST API protected by an API key and usage plan. A Lambda kicker writes job state to DynamoDB, reads the scene from S3, invokes a SageMaker serverless endpoint, writes the mask and GeoJSON back to S3, and returns presigned download URLs. CloudWatch monitors all of it."
+             width="784" height="416"
+             loading="lazy" />
+        <figcaption class="figure-caption">
+          <b>Async serverless architecture.</b> API Gateway and a Lambda kicker
+          front a SageMaker serverless endpoint. S3 holds inputs and outputs,
+          DynamoDB tracks jobs, CloudWatch watches it. The whole thing is one CDK
+          stack.
+        </figcaption>
+      </figure>
+
+      <div class="stat-grid">
+        <div class="stat-group benchmark">
+          <div class="stat-label">Latency<br/>Sentinel-1 crop &middot; CPU endpoint</div>
+          <div class="stat-nums">
+            <div class="stat"><span class="stat-val">1.2 s</span><span class="stat-cap">warm</span></div>
+            <div class="stat"><span class="stat-val">14 s</span><span class="stat-cap">cold start</span></div>
+          </div>
+        </div>
+        <div class="stat-group harvey">
+          <div class="stat-label">Cost<br/>serverless, scales to zero</div>
+          <div class="stat-nums">
+            <div class="stat"><span class="stat-val">$0</span><span class="stat-cap">idle / month</span></div>
+            <div class="stat"><span class="stat-val">&lt;1&cent;</span><span class="stat-cap">per inference</span></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="body">
+        Everything is infrastructure as code in AWS CDK (Python). cdk deploy
+        brings the stack up from a clean account, cdk destroy takes it back to
+        zero. GitHub Actions builds the container, pushes it to ECR, and redeploys
+        on every push to main, authenticating with OIDC so there are no long-lived
+        AWS keys in the repo. The API reproduces the local inference mask bit for
+        bit.
+      </p>
+
+      <div class="actions-row">
+        <a class="btn primary" href="https://github.com/Governor6191/sar-flood-extent-aws" target="_blank" rel="noopener">Code on GitHub &rarr;</a>
+        <a class="btn" href="https://github.com/Governor6191/sar-flood-extent-aws#what-it-does" target="_blank" rel="noopener">Live API and curl</a>
+        <a class="btn ghost" href="#sar-flood">The model it deploys &uarr;</a>
+      </div>
+    </article>
+
+    <!-- Project: MLOps deployment of the SAR pipeline on AWS. (shipped above) -->
     <!-- Project: Medical imaging classifier with uncertainty quantification. Add when shipped. -->
     <!-- Project: LLM RAG application (optional). Add when shipped. -->
     <!-- ============================================================ -->
