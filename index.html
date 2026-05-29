@@ -246,20 +246,19 @@
   .featured-media {
     position: relative;
     background: var(--ink);
-    min-height: 300px;
+    min-height: 340px;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   .featured-media .lwr-canvas {
     position: absolute; inset: 0;
   }
   .featured-media .featured-img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    max-height: 340px;
-    object-fit: contain;
-    padding: 16px;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
   .featured-media .play-pill {
     position: absolute; bottom: 24px; left: 24px;
@@ -580,8 +579,7 @@
     .hero-bottom-row { grid-template-columns: 1fr; gap: 24px; }
     .now-doing-grid { grid-template-columns: 1fr; }
     .featured-card { grid-template-columns: 1fr; }
-    .featured-media { min-height: 240px; }
-    .featured-media .featured-img { max-height: 300px; }
+    .featured-media { min-height: 280px; }
     .split { grid-template-columns: 1fr; }
     .focus { grid-template-columns: 1fr; }
   }
