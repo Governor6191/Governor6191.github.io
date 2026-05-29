@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Live flood demo · Sylvester Arhin Mensah · SAR flood-extent on AWS</title>
+<meta name="description" content="Run the Sentinel-1 SAR flood-extent model live. Upload a small radar crop and watch the predicted flood polygons render on a map, served by a real serverless API on AWS." />
+<link rel="canonical" href="https://governor6191.github.io/projects/flood-demo.html" />
+
+<!-- Open Graph + Twitter -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Live flood demo · SAR flood-extent on AWS" />
+<meta property="og:description" content="Upload a small Sentinel-1 radar crop and watch the predicted flood polygons render on a map, served by a real serverless API on AWS." />
+<meta property="og:url" content="https://governor6191.github.io/projects/flood-demo.html" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:alt" content="Sylvester Arhin Mensah. Mathematics for systems in motion. PhD · Mississippi State University." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Live flood demo · SAR flood-extent on AWS" />
+<meta name="twitter:description" content="Upload a small Sentinel-1 radar crop and watch the predicted flood polygons render on a map, served by a real serverless API on AWS." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+
+<!-- the site's shared design system and chrome, same as every other page -->
+<link rel="stylesheet" href="/shared.css" />
+
+<!-- Leaflet from CDN, pinned with subresource integrity -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+
+<style>
+  /* ============================================================
+     Live flood demo. One page, vanilla JS, Leaflet from CDN.
+     Borrows the site's tokens (--ink, --accent, --serif, ...) from
+     shared.css so it reads as part of the site, not bolted on.
+     ============================================================ */
+
+  .demo-wrap { max-width: 880px; margin: 0 auto; }
+
+  .demo-panel {
+    border: 1.5px solid var(--ink);
+    border-radius: 18px;
+    background: var(--bg-2);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 32px;
+    margin-bottom: 40px;
+  }
+
+  /* ===== controls ===== */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+  /* hide the native file input, drive it from the label button */
+  .file-native {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+  }
+  .file-native:focus-visible + label {
+    outline: 3px solid var(--accent-2);
+    outline-offset: 3px;
+  }
+  .filehint {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .filehint.warn { color: var(--accent-text); }
+  .sample-line {
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .sample-line button {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent-2-text);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--accent-2);
+    padding: 0 0 1px;
+    cursor: pointer;
+  }
+  .sample-line button:hover { color: var(--ink); border-color: var(--ink); }
+  .btn[disabled], .sample-line button[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ===== status line ===== */
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--rule-2);
+    border-left-width: 4px;
+    border-radius: 8px;
+    background: var(--bg-3);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    min-height: 22px;
+  }
+  .status.is-busy  { border-left-color: var(--accent-2); color: var(--accent-2-text); }
+  .status.is-ok    { border-left-color: var(--accent-4); color: var(--accent-4-text); background: rgba(0,184,122,0.10); }
+  .status.is-error { border-left-color: var(--accent);   color: var(--accent-text);   background: rgba(255,90,60,0.10); }
+  .status.is-info  { border-left-color: var(--rule-2); }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: demo-spin 0.7s linear infinite;
+  }
+  @keyframes demo-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+  /* ===== map ===== */
+  #map {
+    height: 480px;
+    margin-top: 26px;
+    border: 1.5px solid var(--ink);
+    border-radius: 12px;
+    background: var(--bg-3);
+    z-index: 0;
+  }
+  .map-legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .legend-swatch {
+    width: 18px; height: 12px;
+    border-radius: 3px;
+    border: 1.5px solid #b72f1d;
+    background: rgba(255,90,60,0.45);
+    flex-shrink: 0;
+  }
+
+  .note {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    margin-top: 4px;
+    max-width: 64ch;
+  }
+  .note a { color: var(--accent-2-text); border-bottom: 1px solid var(--accent-2); }
+  .note a:hover { color: var(--ink); border-color: var(--ink); }
+
+  @media (max-width: 600px) {
+    .demo-panel { padding: 24px 18px; }
+    #map { height: 380px; }
+  }
+</style>
+</head>
+<body data-page="projects">
+<div id="nav-mount"></div>
+
+<main class="wrap">
+
+  <div class="page-hero">
+    <div class="eyebrow">Projects &middot; live demo</div>
+    <h1>See the flood model <em>run.</em></h1>
+    <p class="lede">
+      This is the SAR flood model from the project below, running live on AWS.
+      Pick a small Sentinel-1 radar crop, hit run, and the model segments the
+      flood water and draws the polygons on the map. It runs serverless and
+      scales to zero, so the first call after a quiet spell is a cold start and
+      takes a little longer. What comes back is the real API answering, not a
+      recording.
+    </p>
+  </div>
+
+  <div class="demo-wrap">
+    <div class="demo-panel">
+      <div class="controls">
+        <input class="file-native" type="file" id="file" accept=".tif,.tiff" />
+        <label class="btn" for="file">Choose a scene (.tif)</label>
+        <button class="btn primary" id="run" type="button">Run inference</button>
+        <span class="filehint" id="filehint">no file selected</span>
+      </div>
+
+      <p class="sample-line">
+        Don't have a Sentinel-1 scene handy?
+        <button id="sample" type="button">Try a sample Houston crop</button>
+        (a 1.6 MB Hurricane Harvey crop, 2017).
+      </p>
+
+      <div class="status is-info" id="status" role="status" aria-live="polite">
+        Ready. Choose a 2-band Sentinel-1 GeoTIFF (VV and VH), up to 5 MB.
+      </div>
+
+      <div id="map"></div>
+
+      <div class="map-legend">
+        <span class="legend-swatch" aria-hidden="true"></span>
+        Predicted flood water. The map fits to the result once the model finishes.
+      </div>
+    </div>
+
+    <p class="note">
+      The model is a U-Net (ResNet-34 encoder) that reads radar backscatter and
+      finds open water. It works through cloud and at night, which is when
+      optical satellites are blind and a flood map matters most. Want the detail?
+      Read the
+      <a href="/projects.html#sar-flood-aws">full project writeup</a>
+      and the
+      <a href="https://github.com/Governor6191/sar-flood-extent-aws" target="_blank" rel="noopener">code on GitHub</a>.
+    </p>
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+
+<script src="/chrome.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+<script>
+  // ============================================================
+  // Talks to the live serverless API. This mirrors scripts/e2e_test.py
+  // from the sar-flood-extent-aws repo, step for step:
+  //   1. POST /uploads            -> a presigned S3 POST (url + fields)
+  //   2. POST the file to S3       (the policy caps it at 5 MB)
+  //   3. POST /infer {input_key}   -> job_id
+  //   4. poll GET /infer/{job_id}  every 2 s until status is done
+  //   5. GET the GeoJSON, draw it on Leaflet, fit the map to it
+  // ============================================================
+
+  const API_BASE = "https://dne7hggf3f.execute-api.us-east-1.amazonaws.com/demo";
+
+  // This key is public on purpose. It is visible right here in the page source,
+  // and that is fine: it is a separate demo key, not Sylvester's own. The defense
+  // is not secrecy. It is a tight usage plan (20 requests a day, 1 per second),
+  // a CORS lock so only this site can call the API from a browser, and a 5 MB cap
+  // on the upload. Worst case someone scrapes the key and burns 20 cheap
+  // inferences a day, which a $5 AWS budget alarm backstops. See the AWS repo.
+  const API_KEY = "GgTZVgYWMm5NBKk0RQSmT2bubyIrE5iE2IOzynrv";
+
+  const MAX_BYTES = 5 * 1024 * 1024;
+  const POLL_MS = 2000;
+  const POLL_TIMEOUT_MS = 180000;
+
+  let map, floodLayer;
+
+  const els = {
+    file: document.getElementById('file'),
+    run: document.getElementById('run'),
+    sample: document.getElementById('sample'),
+    filehint: document.getElementById('filehint'),
+    status: document.getElementById('status'),
+  };
+
+  function initMap() {
+    map = L.map('map').setView([29.76, -95.37], 10); // Houston, the validation site
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+  }
+
+  function setStatus(text, state) {
+    els.status.className = 'status is-' + (state || 'info');
+    const busy = state === 'busy';
+    els.status.innerHTML = (busy ? '<span class="spinner" aria-hidden="true"></span>' : '')
+      + '<span>' + text + '</span>';
+  }
+
+  function setBusy(busy) {
+    els.run.disabled = busy;
+    els.sample.disabled = busy;
+    els.file.disabled = busy;
+  }
+
+  function fmtMB(bytes) { return (bytes / (1024 * 1024)).toFixed(1) + ' MB'; }
+
+  function validName(name) { return /\.tiff?$/i.test(name || ''); }
+
+  async function jsonReq(method, url, body) {
+    const headers = { 'x-api-key': API_KEY };
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    const res = await fetch(url, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) {
+      let detail = '';
+      try { detail = (await res.json()).error || ''; } catch (e) { /* no json body */ }
+      if (res.status === 403) throw new Error("the daily demo limit is used up, or the key was rejected (403). It resets each day. Try again later.");
+      if (res.status === 429) throw new Error("too many requests right now (429). Give it a few seconds and retry.");
+      throw new Error('request failed (' + res.status + ')' + (detail ? ': ' + detail : ''));
+    }
+    return res.json();
+  }
+
+  async function uploadToS3(presign, file) {
+    const form = new FormData();
+    Object.entries(presign.upload_fields).forEach(([k, v]) => form.append(k, v));
+    form.append('file', file, 'scene.tif'); // file goes last; S3 ignores anything after it
+    const res = await fetch(presign.upload_url, { method: 'POST', body: form });
+    if (!res.ok) {
+      if (res.status === 400 || res.status === 403) throw new Error('the upload was rejected. The crop may be over the 5 MB cap.');
+      throw new Error('upload to storage failed (' + res.status + ')');
+    }
+  }
+
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  async function poll(jobId) {
+    const deadline = Date.now() + POLL_TIMEOUT_MS;
+    while (Date.now() < deadline) {
+      const st = await jsonReq('GET', API_BASE + '/infer/' + jobId);
+      if (st.status === 'done' || st.status === 'failed') return st;
+      await sleep(POLL_MS);
+    }
+    throw new Error('timed out waiting for the model. Try again in a moment.');
+  }
+
+  function renderFlood(geojson) {
+    if (floodLayer) map.removeLayer(floodLayer);
+    floodLayer = L.geoJSON(geojson, {
+      style: { color: '#b72f1d', weight: 2, fillColor: '#ff5a3c', fillOpacity: 0.45 },
+    }).addTo(map);
+    const b = floodLayer.getBounds();
+    if (b.isValid()) map.fitBounds(b, { padding: [24, 24] });
+  }
+
+  async function runInference(file, label) {
+    if (!validName(file.name || label)) throw new Error('that is not a .tif or .tiff file.');
+    if (file.size > MAX_BYTES) throw new Error('that file is ' + fmtMB(file.size) + '. The demo cap is 5 MB, so use a smaller crop.');
+
+    setStatus('asking for an upload slot', 'busy');
+    const presign = await jsonReq('POST', API_BASE + '/uploads', {});
+
+    setStatus('uploading ' + label, 'busy');
+    await uploadToS3(presign, file);
+
+    setStatus('starting the job', 'busy');
+    const sub = await jsonReq('POST', API_BASE + '/infer', { input_key: presign.input_key });
+
+    setStatus('running model, ~30 to 60 s on cold start', 'busy');
+    const job = await poll(sub.job_id);
+    if (job.status !== 'done') throw new Error('the job failed: ' + (job.error || 'unknown reason') + '.');
+
+    setStatus('drawing the flood polygons', 'busy');
+    const geoRes = await fetch(job.geojson_url);
+    if (!geoRes.ok) throw new Error('could not fetch the result GeoJSON (' + geoRes.status + ').');
+    const geojson = await geoRes.json();
+    renderFlood(geojson);
+
+    const n = (job.n_polygons != null) ? job.n_polygons : (geojson.features ? geojson.features.length : 0);
+    const water = (job.water_fraction != null) ? ', ' + (job.water_fraction * 100).toFixed(1) + '% of the crop is water' : '';
+    setStatus('done. ' + n + ' flood polygons' + water + '.', 'ok');
+  }
+
+  async function guardedRun(file, label) {
+    setBusy(true);
+    try {
+      await runInference(file, label);
+    } catch (e) {
+      setStatus((e && e.message) ? e.message : String(e), 'error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  els.file.addEventListener('change', function () {
+    const f = els.file.files[0];
+    if (!f) { els.filehint.textContent = 'no file selected'; els.filehint.classList.remove('warn'); return; }
+    const tooBig = f.size > MAX_BYTES;
+    const badType = !validName(f.name);
+    els.filehint.textContent = f.name + ' (' + fmtMB(f.size) + ')'
+      + (tooBig ? ' too big, 5 MB max' : '')
+      + (badType ? ' not a .tif' : '');
+    els.filehint.classList.toggle('warn', tooBig || badType);
+  });
+
+  els.run.addEventListener('click', function () {
+    const f = els.file.files[0];
+    if (!f) { setStatus('pick a .tif or .tiff scene first, or try the sample crop.', 'error'); return; }
+    guardedRun(f, f.name);
+  });
+
+  els.sample.addEventListener('click', async function () {
+    setBusy(true);
+    setStatus('loading the sample Houston crop', 'busy');
+    try {
+      const res = await fetch('sample/harvey_houston_crop.tif');
+      if (!res.ok) throw new Error('could not load the sample crop (' + res.status + ').');
+      const blob = await res.blob();
+      const file = new File([blob], 'harvey_houston_crop.tif', { type: 'image/tiff' });
+      await runInference(file, 'the sample Houston crop');
+    } catch (e) {
+      setStatus((e && e.message) ? e.message : String(e), 'error');
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', initMap);
+</script>
+</body>
+</html>
