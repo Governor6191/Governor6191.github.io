@@ -252,6 +252,13 @@
   .featured-media .lwr-canvas {
     position: absolute; inset: 0;
   }
+  .featured-media .featured-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;
+    background: var(--bg-ink);
+    padding: 18px;
+  }
   .featured-media .play-pill {
     position: absolute; bottom: 24px; left: 24px;
     background: var(--bg-2);
@@ -655,46 +662,50 @@
     </div>
   </section>
 
-  <!-- ============== FEATURED RESEARCH ============== -->
+  <!-- ============== FEATURED PROJECT ============== -->
   <section class="featured">
     <div class="section-head">
       <div>
-        <div class="eyebrow" style="margin-bottom: 12px;">Featured research</div>
-        <h2 class="section-title">Shock waves <em class="hl-coral">in motion.</em></h2>
+        <div class="eyebrow" style="margin-bottom: 12px;">Featured project</div>
+        <h2 class="section-title">Reading floods <em class="hl-coral">from radar.</em></h2>
       </div>
-      <a class="more-link" href="research.html">All research →</a>
+      <a class="more-link" href="projects.html">All projects →</a>
     </div>
 
     <article class="featured-card">
       <div class="featured-media">
-        <canvas class="lwr-canvas" id="lwr-canvas" aria-label="Animated visualization of LWR conservation-law density profiles" role="img"></canvas>
-        <span class="corner-tag">live · ρ(x, t)</span>
+        <img class="featured-img"
+             src="assets/images/harvey_validation.png"
+             alt="Four-panel Hurricane Harvey validation over Houston: Sentinel-1 VV radar input, the model's predicted flood extent in red, the Copernicus EMS observed flood in blue, and the agreement map with permanent water removed."
+             width="1677" height="1374"
+             loading="lazy" />
+        <span class="corner-tag">shipped · 2026</span>
       </div>
       <div class="featured-body">
         <div class="tags">
-          <span class="tag accent">Numerical PDE</span>
-          <span class="tag blue">Traffic Flow</span>
-          <span class="tag yellow">Course paper · v1 complete</span>
+          <span class="tag accent">Computer vision</span>
+          <span class="tag blue">Deep learning</span>
+          <span class="tag green">Shipped</span>
         </div>
-        <h2>Shock-wave formation &amp; the LWR conservation law.</h2>
+        <h2>Sentinel-1 SAR flood-extent pipeline.</h2>
         <p>
-          A first-order Godunov finite-volume scheme for the
-          Lighthill-Whitham-Richards scalar conservation law, calibrated
-          and validated against vehicle trajectories from the
-          <b>NGSIM US-101</b> dataset. Predicted shock speeds match
-          observed backward-propagating congestion waves in direction and
-          order of magnitude; the report runs 37 pages with 49 equations
-          and four figures.
+          A U-Net with a ResNet-34 encoder reads Sentinel-1 radar imagery
+          and maps flood extent. Trained on the <b>Sen1Floods11</b>
+          benchmark, then validated on <b>Hurricane Harvey</b> over Houston,
+          a real US disaster the model never saw. Radar sees through cloud
+          and works at night, so it's the data source you can use while a
+          storm is still overhead. Code, pretrained model, and the honest
+          Harvey validation are public.
         </p>
         <div class="meta-row">
-          <div class="mr-cell">Method<b>Godunov FV</b></div>
-          <div class="mr-cell">Data<b>NGSIM US-101</b></div>
-          <div class="mr-cell">Course<b>MA 8213 · Spring '26</b></div>
-          <div class="mr-cell">Status<b>v1 complete · extending</b></div>
+          <div class="mr-cell">Model<b>U-Net · ResNet-34</b></div>
+          <div class="mr-cell">Data<b>Sen1Floods11</b></div>
+          <div class="mr-cell">Benchmark<b>IoU 0.67 · F1 0.80</b></div>
+          <div class="mr-cell">Harvey 2017<b>flood-only IoU 0.12</b></div>
         </div>
         <div style="display: flex; gap: 12px; margin-top: 4px; flex-wrap: wrap;">
-          <a class="btn primary" href="/research/lwr/">Read the full project →</a>
-          <a class="btn" href="/research/lwr/lwr-ma8213-report.pdf" target="_blank" rel="noopener">PDF (37 pp)</a>
+          <a class="btn primary" href="projects.html#sar-flood">See the project →</a>
+          <a class="btn" href="https://github.com/Governor6191/sar-flood-extent" target="_blank" rel="noopener">Code (GitHub)</a>
         </div>
       </div>
     </article>
@@ -824,104 +835,5 @@
 <div id="foot-mount"></div>
 
 <script src="chrome.js"></script>
-<script>
-  const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  function prefersReducedMotion() {
-    return reduceMotionQuery.matches;
-  }
-
-  /* LWR shock-wave canvas */
-  function lwrCanvas() {
-    const canvas = document.getElementById('lwr-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    function resize() {
-      const r = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = r.width * dpr;
-      canvas.height = r.height * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    resize();
-
-    let t0 = performance.now();
-    const reduceMotion = prefersReducedMotion();
-    window.addEventListener('resize', () => {
-      resize();
-      if (reduceMotion) frame(t0);
-    });
-
-    function frame(now) {
-      const t = (now - t0) / 1000;
-      const w = canvas.getBoundingClientRect().width;
-      const h = canvas.getBoundingClientRect().height;
-      ctx.clearRect(0, 0, w, h);
-
-      // grid
-      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < w; x += 40) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-      }
-      for (let y = 0; y < h; y += 40) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-      }
-
-      // density profiles (shock fronts): tight cluster + dense phases
-      // 12 curves clustered around y = h * 0.65 with only ~40 px of
-      // vertical jitter, phase offset 0.5 so the 12 curves cover the
-      // entire cycle (length 6) at any moment. Wider sigmoid transition
-      // (exp 0.05) makes each curve's "wave" visible across more of
-      // the canvas. Result: a continuous weaving wave field, never a
-      // stack of flat horizontal lines.
-      const palette = ['#ff5a3c', '#ffd23f', '#1e87ff', '#00b87a', '#6f3df5', '#ff4fa6'];
-      const N = 12;
-      const anchorIdx = 5;
-      for (let i = 0; i < N; i++) {
-        const baseline = h * 0.65 + (i % 4) * 14 - 18; // ~56 px cluster around 0.65h
-        const phase = (t * 0.45 + i * 0.5) % 6;
-        const x0 = (phase / 6) * (w + 400) - 200;
-        const amp = 65 + (i % 5) * 7;
-
-        ctx.beginPath();
-        for (let x = 0; x <= w; x += 2) {
-          const dx = x - x0;
-          const front = 1 / (1 + Math.exp(0.05 * dx));
-          const y = baseline - amp * front;
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = palette[i % palette.length];
-        ctx.lineWidth = i === anchorIdx ? 2.5 : 1.4;
-        ctx.globalAlpha = i === anchorIdx ? 1 : 0.55;
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-
-      // characteristics: denser ambient motion
-      ctx.strokeStyle = 'rgba(255,210,63,0.13)';
-      ctx.lineWidth = 1;
-      for (let i = -14; i < 28; i++) {
-        ctx.beginPath();
-        const x = i * 48 + (t * 30) % 48;
-        ctx.moveTo(x, h);
-        ctx.lineTo(x + 220, 0);
-        ctx.stroke();
-      }
-
-      // labels
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.font = 'bold 11px JetBrains Mono';
-      ctx.fillText('ρ(x, t)', 16, 24);
-      ctx.fillText('x →', w - 50, h - 16);
-
-      if (!reduceMotion) requestAnimationFrame(frame);
-    }
-    if (reduceMotion) frame(t0);
-    else requestAnimationFrame(frame);
-  }
-
-  setTimeout(() => { lwrCanvas(); }, 100);
-</script>
 </body>
 </html>
