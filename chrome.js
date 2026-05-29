@@ -5,6 +5,7 @@
   const NAV = [
     { key: 'home',     label: 'Home',     href: '/' },
     { key: 'research', label: 'Research', href: '/research.html' },
+    { key: 'projects', label: 'Projects', href: '/projects.html' },
     { key: 'teaching', label: 'Teaching', href: '/teaching.html' },
     { key: 'cv',       label: 'CV',       href: '/cv/sylvester-arhin-mensah-cv.pdf', external: true },
     { key: 'contact',  label: 'Contact',  href: '/contact.html' },
@@ -59,6 +60,7 @@
               <h5>Site</h5>
               <ul>
                 <li><a href="/research.html">Research</a></li>
+                <li><a href="/projects.html">Projects</a></li>
                 <li><a href="/teaching.html">Teaching</a></li>
                 <li><a href="/cv/sylvester-arhin-mensah-cv.pdf" target="_blank" rel="noopener">CV (PDF) &nearr;</a></li>
                 <li><a href="/contact.html">Contact</a></li>

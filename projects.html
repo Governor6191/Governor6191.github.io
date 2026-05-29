@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Projects · Sylvester Arhin Mensah · Applied ML, computer vision, remote sensing</title>
+<meta name="description" content="Shipped implementation projects by Sylvester Arhin Mensah, where the research turns into code other people can run. First entry: a Sentinel-1 SAR flood-extent pipeline validated on Hurricane Harvey." />
+<link rel="canonical" href="https://governor6191.github.io/projects.html" />
+
+<!-- Open Graph + Twitter -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Projects · Sylvester Arhin Mensah · Applied ML, computer vision, remote sensing" />
+<meta property="og:description" content="Shipped implementation projects where the research turns into code other people can run. First entry: a Sentinel-1 SAR flood-extent pipeline validated on Hurricane Harvey." />
+<meta property="og:url" content="https://governor6191.github.io/projects.html" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:alt" content="Sylvester Arhin Mensah. Mathematics for systems in motion. PhD · Mississippi State University." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Projects · Sylvester Arhin Mensah · Applied ML, computer vision, remote sensing" />
+<meta name="twitter:description" content="Shipped implementation projects where the research turns into code other people can run. First entry: a Sentinel-1 SAR flood-extent pipeline validated on Hurricane Harvey." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta name="twitter:image:alt" content="Sylvester Arhin Mensah. Mathematics for systems in motion. PhD · Mississippi State University." />
+
+<link rel="stylesheet" href="shared.css" />
+<style>
+  /* ============================================================
+     Projects page. The implementation half of the work.
+
+     Each project is one self-contained <article class="proj-feature">.
+     To add a new project, copy one whole article block and refill it.
+     The figure, stat grid, and national-interest note are all optional
+     parts of the block; drop the ones a given project does not have.
+     ============================================================ */
+
+  .projects-list {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  .proj-feature {
+    border: 1.5px solid var(--ink);
+    border-radius: 18px;
+    background: var(--bg-2);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 40px;
+    margin-bottom: 56px;
+  }
+
+  /* ===== entry header ===== */
+  .pf-status {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-3);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .pf-status .stat-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-4); box-shadow: 0 0 8px var(--accent-4);
+  }
+  .pf-status.draft .stat-dot { background: var(--accent-3); box-shadow: none; }
+
+  .proj-feature h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(30px, 4.5vw, 42px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .pf-lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 60ch;
+    margin-bottom: 20px;
+  }
+  .pf-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  /* library and tool names read better in their own casing than ALL CAPS */
+  .pf-tags .tag { text-transform: none; letter-spacing: 0.01em; font-weight: 500; }
+
+  /* ===== prose ===== */
+  .proj-feature p.body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 24px 0;
+    max-width: 68ch;
+  }
+  .proj-feature p.body b { font-weight: 600; }
+
+  /* ===== figures (matches the research detail-page figure pattern) ===== */
+  .figure {
+    margin: 28px 0;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .figure.tall { max-width: 540px; margin-left: auto; margin-right: auto; }
+  .figure-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #ffffff;
+    border-bottom: 1px solid var(--rule);
+  }
+  .figure-caption {
+    padding: 14px 20px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+  .figure-caption b { color: var(--ink); }
+
+  /* ===== headline-number stat grid ===== */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .stat-group {
+    border: 1.5px solid var(--ink);
+    border-radius: 12px;
+    padding: 20px 22px;
+    background: var(--bg-3);
+  }
+  .stat-group.benchmark { background: var(--bg-3); }
+  .stat-group.harvey { background: var(--bg-2); }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    line-height: 1.4;
+    margin-bottom: 16px;
+    min-height: 2.8em;
+  }
+  .stat-nums { display: flex; gap: 28px; }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-val {
+    font-family: var(--serif);
+    font-size: 46px;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .stat-cap {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+
+  /* ===== national-interest note ===== */
+  .niw-note {
+    margin: 28px 0;
+    padding: 18px 22px;
+    background: var(--bg-3);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 70ch;
+  }
+  .niw-note b { color: var(--ink); }
+
+  /* ===== links ===== */
+  .actions-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1.5px solid var(--ink);
+  }
+
+  @media (max-width: 720px) {
+    .proj-feature { padding: 28px 22px; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .stat-label { min-height: 0; }
+  }
+</style>
+</head>
+<body data-page="projects">
+<div id="nav-mount"></div>
+
+<main class="wrap">
+
+  <div class="page-hero">
+    <div class="eyebrow">Projects &middot; research, implemented</div>
+    <h1>Where the research <em>ships.</em></h1>
+    <p class="lede">
+      The implementation half of the work. Each project starts from
+      something I studied and ends in code other people can run: a public
+      repo, a released model, results checked against an independent
+      reference. Status flags are honest. Shipped means shipped.
+    </p>
+  </div>
+
+  <div class="projects-list">
+
+    <!-- ============================================================
+         Project A: Sentinel-1 SAR flood-extent pipeline (first entry)
+         ============================================================ -->
+    <article class="proj-feature" id="sar-flood">
+      <div class="pf-status"><span class="stat-dot"></span> Shipped &middot; code, model, and validation public</div>
+
+      <h2>Sentinel-1 SAR flood-extent pipeline.</h2>
+      <p class="pf-lede">
+        A deep-learning segmentation pipeline that maps flood extent from
+        radar imagery. Trained on Sen1Floods11, validated on Hurricane
+        Harvey over Houston.
+      </p>
+      <div class="pf-tags">
+        <span class="tag accent">Computer vision</span>
+        <span class="tag blue">Deep learning</span>
+        <span class="tag green">Remote sensing</span>
+      </div>
+      <div class="pf-tags" style="margin-top: 10px;">
+        <span class="tag">Python</span>
+        <span class="tag">PyTorch</span>
+        <span class="tag">segmentation_models_pytorch</span>
+        <span class="tag">rasterio</span>
+        <span class="tag">Earth Engine</span>
+        <span class="tag">Hugging Face Hub</span>
+      </div>
+
+      <p class="body">
+        A U-Net with a ResNet-34 encoder reads Sentinel-1 SAR imagery
+        (VV and VH at 10 m) and outputs binary flood-extent masks. Radar
+        sees through cloud and works at night, so it's the data source you
+        can actually use during an active disaster, when storm cover blocks
+        the optical satellites.
+      </p>
+
+      <figure class="figure">
+        <img class="figure-img"
+             src="assets/images/harvey_validation.png"
+             alt="Four-panel Hurricane Harvey validation over Houston. Panel 1: Sentinel-1 VV radar input of the flooded area. Panel 2: the model's predicted flood extent in red. Panel 3: the Copernicus EMS observed flood delineation in blue. Panel 4: the agreement map with permanent water removed, green for true positives, red for false positives, blue for false negatives."
+             width="1677" height="1374"
+             loading="lazy" />
+        <figcaption class="figure-caption">
+          <b>Hurricane Harvey, Houston, August 30 2017.</b> Sentinel-1 VV
+          input, model prediction (red), Copernicus EMS observed flood
+          (blue), and the agreement map with permanent water removed.
+        </figcaption>
+      </figure>
+
+      <div class="stat-grid">
+        <div class="stat-group benchmark">
+          <div class="stat-label">Sen1Floods11 benchmark<br/>all-hand test split &middot; water class</div>
+          <div class="stat-nums">
+            <div class="stat"><span class="stat-val">0.67</span><span class="stat-cap">IoU</span></div>
+            <div class="stat"><span class="stat-val">0.80</span><span class="stat-cap">F1</span></div>
+          </div>
+        </div>
+        <div class="stat-group harvey">
+          <div class="stat-label">Hurricane Harvey 2017<br/>Houston &middot; flood-only</div>
+          <div class="stat-nums">
+            <div class="stat"><span class="stat-val">0.12</span><span class="stat-cap">IoU</span></div>
+            <div class="stat"><span class="stat-val">0.22</span><span class="stat-cap">F1</span></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="body">
+        Both numbers matter. The benchmark number says the model
+        generalizes across the eleven Sen1Floods11 test regions. The Harvey
+        number is what happens when you point it at a real US hurricane it
+        never trained on. The gap between them is real, and it's explained:
+        most of the Copernicus reference is flooded vegetation and flooded
+        urban land, which stays bright in radar, and the model only finds
+        water by its dark backscatter. Open-water flood is the part SAR
+        does well. Urban flood from C-band radar alone is not, and the
+        number says so. Honest reporting beats a curated number.
+      </p>
+
+      <figure class="figure tall">
+        <img class="figure-img"
+             src="assets/images/test_predictions.png"
+             alt="Six Sen1Floods11 test scenes in a grid. Each row shows the Sentinel-1 VV input, the hand-labeled ground-truth flood mask in blue, and the model's prediction in red. The model captures clear river and floodplain water and leaves dry scenes blank."
+             width="1451" height="2885"
+             loading="lazy" />
+        <figcaption class="figure-caption">
+          <b>Sen1Floods11 test set.</b> VV input, ground truth (blue), and
+          prediction (red) on six held-out test scenes the model never saw
+          during training. This is the 0.67 IoU at work.
+        </figcaption>
+      </figure>
+
+      <div class="niw-note">
+        <b>Why this target.</b> Sentinel-1 launched in 2014, so the
+        validation target had to be a post-2014 US disaster with full radar
+        coverage. Hurricane Harvey over Houston in 2017 fits, and the
+        pipeline runs on open data from the benchmark to a real US Gulf
+        Coast disaster, end to end.
+      </div>
+
+      <div class="actions-row">
+        <a class="btn primary" href="https://github.com/Governor6191/sar-flood-extent" target="_blank" rel="noopener">Code on GitHub &rarr;</a>
+        <a class="btn" href="https://huggingface.co/Governor6191/sar-flood-extent-unet-resnet34" target="_blank" rel="noopener">Pretrained model (Hugging Face)</a>
+        <a class="btn ghost" href="https://github.com/Governor6191/sar-flood-extent#real-disaster-validation" target="_blank" rel="noopener">Harvey validation write-up</a>
+      </div>
+    </article>
+
+    <!--
+      ============================================================
+      Forthcoming projects. Add each as a copy of the
+      <article class="proj-feature"> block above, refilled with the
+      new project's content, when it ships complete (public repo,
+      results, at least one figure). Keep them in shipped order.
+
+      The slots below match the summer 2026 plan:
+    -->
+    <!-- Project: MLOps deployment of the SAR pipeline on AWS. Add when shipped. -->
+    <!-- Project: Medical imaging classifier with uncertainty quantification. Add when shipped. -->
+    <!-- Project: LLM RAG application (optional). Add when shipped. -->
+    <!-- ============================================================ -->
+
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+
+<script src="chrome.js"></script>
+</body>
+</html>
