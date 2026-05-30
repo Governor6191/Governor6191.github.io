@@ -256,7 +256,8 @@
   const API_KEY = "GgTZVgYWMm5NBKk0RQSmT2bubyIrE5iE2IOzynrv";
 
   const MAX_BYTES = 5 * 1024 * 1024;
-  const POLL_MS = 2000;
+  const POLL_START_MS = 2000;  // first poll is quick so a warm run feels instant
+  const POLL_MAX_MS = 6000;    // then back off so a long cold start does not drain the daily quota
   const POLL_TIMEOUT_MS = 180000;
 
   let map, floodLayer;
@@ -305,9 +306,13 @@
     if (!res.ok) {
       let detail = '';
       try { detail = (await res.json()).error || ''; } catch (e) { /* no json body */ }
-      if (res.status === 403) throw new Error("the daily demo limit is used up, or the key was rejected (403). It resets each day. Try again later.");
-      if (res.status === 429) throw new Error("too many requests right now (429). Give it a few seconds and retry.");
-      throw new Error('request failed (' + res.status + ')' + (detail ? ': ' + detail : ''));
+      let msg;
+      if (res.status === 429) msg = "the demo is busy or has hit today's limit (it resets each day). Give it a minute and try again.";
+      else if (res.status === 403) msg = 'the demo key was rejected (403).';
+      else msg = 'request failed (' + res.status + ')' + (detail ? ': ' + detail : '');
+      const err = new Error(msg);
+      err.status = res.status;
+      throw err;
     }
     return res.json();
   }
@@ -327,10 +332,18 @@
 
   async function poll(jobId) {
     const deadline = Date.now() + POLL_TIMEOUT_MS;
+    let wait = POLL_START_MS;
     while (Date.now() < deadline) {
-      const st = await jsonReq('GET', API_BASE + '/infer/' + jobId);
-      if (st.status === 'done' || st.status === 'failed') return st;
-      await sleep(POLL_MS);
+      try {
+        const st = await jsonReq('GET', API_BASE + '/infer/' + jobId);
+        if (st.status === 'done' || st.status === 'failed') return st;
+      } catch (e) {
+        // a throttle (429) while the job is still running is not fatal: the work
+        // keeps going server-side, so wait and poll again until the timeout.
+        if (e.status !== 429) throw e;
+      }
+      await sleep(wait);
+      wait = Math.min(wait + 1000, POLL_MAX_MS);
     }
     throw new Error('timed out waiting for the model. Try again in a moment.');
   }
