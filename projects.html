@@ -81,6 +81,25 @@
     pointer-events: none;
   }
 
+  /* Image thumbnail variant of the media panel. The detail page shows the
+     full figure; the card just needs to communicate the project visually. */
+  .proj-thumb {
+    flex: 1;
+    background: var(--bg-3);
+    overflow: hidden;
+    position: relative;
+  }
+  .proj-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  /* BraTS panorama is 4:1, so a center-crop lands on a single panel.
+     Bias right to land on the uncertainty map, the project's headline. */
+  .proj-thumb.brats img { object-position: 78% center; }
+
   .proj-meta-row {
     display: flex; gap: 0;
     border-top: 1.5px solid var(--ink);
@@ -180,8 +199,10 @@
        ============================================================ -->
   <article class="project" id="sar-flood">
     <div class="proj-media">
-      <div class="proj-placeholder">
-        Sentinel-1 SAR<br/>Hurricane Harvey 2017<br/>Houston
+      <div class="proj-thumb">
+        <img src="/assets/images/harvey_validation.png"
+             alt="Four-panel Hurricane Harvey 2017 validation over Houston: Sentinel-1 VV radar input, model predicted flood in red, Copernicus EMS observed flood in blue, and the agreement map with permanent water removed."
+             loading="lazy" />
       </div>
       <div class="proj-meta-row">
         <div class="vm-cell">Model<b>U-Net + ResNet-34</b></div>
@@ -223,8 +244,10 @@
        ============================================================ -->
   <article class="project flip" id="sar-flood-aws">
     <div class="proj-media">
-      <div class="proj-placeholder">
-        AWS serverless<br/>one cdk deploy<br/>scales to zero
+      <div class="proj-thumb">
+        <img src="/assets/images/sar_flood_aws_architecture.png"
+             alt="Architecture diagram. A caller uploads a Sentinel-1 scene to S3 via a presigned URL. API Gateway plus a Lambda kicker writes a job to DynamoDB and invokes a SageMaker serverless endpoint. The mask and GeoJSON return through presigned S3 URLs."
+             loading="lazy" />
       </div>
       <div class="proj-meta-row">
         <div class="vm-cell">Inference<b>SageMaker</b></div>
@@ -265,8 +288,10 @@
        ============================================================ -->
   <article class="project" id="skin-lesion">
     <div class="proj-media">
-      <div class="proj-placeholder">
-        ISIC dermoscopy<br/>Deep Ensembles<br/>calibrated uncertainty
+      <div class="proj-thumb">
+        <img src="/assets/images/isic_worked_examples.png"
+             alt="Two rows of real ISIC dermoscopy test lesions. Top row: cases where the five-member Deep Ensemble is confident and correct. Bottom row: the lesions where the members disagree most, dark and irregular pigmented lesions that are the genuinely harder cases."
+             loading="lazy" />
       </div>
       <div class="proj-meta-row">
         <div class="vm-cell">Model<b>ResNet-50 ensemble</b></div>
@@ -307,8 +332,10 @@
        ============================================================ -->
   <article class="project flip" id="brain-tumor">
     <div class="proj-media">
-      <div class="proj-placeholder">
-        BraTS 2020 MRI<br/>2D-slice U-Net<br/>per-voxel uncertainty
+      <div class="proj-thumb brats">
+        <img src="/assets/images/brats_uncertainty.png"
+             alt="Per-voxel uncertainty for brain tumor segmentation: FLAIR MRI input, predicted tumor mask, expert ground-truth mask, and the per-voxel uncertainty map. The uncertainty concentrates along the tumor boundary and through the heterogeneous core."
+             loading="lazy" />
       </div>
       <div class="proj-meta-row">
         <div class="vm-cell">Model<b>2D-slice U-Net</b></div>
