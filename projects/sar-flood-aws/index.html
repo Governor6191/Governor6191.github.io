@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Serverless SAR Flood-Extent API on AWS · Sylvester Arhin Mensah</title>
+<meta name="description" content="The SAR flood model deployed as a live serverless inference API on AWS. SageMaker Serverless behind an async API Gateway, all infrastructure as code in CDK, CI/CD via GitHub Actions and OIDC." />
+<link rel="canonical" href="https://governor6191.github.io/projects/sar-flood-aws/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Serverless SAR Flood-Extent API on AWS" />
+<meta property="og:description" content="The flood model deployed as a live serverless inference API. The whole stack comes up from one cdk deploy." />
+<meta property="og:url" content="https://governor6191.github.io/projects/sar-flood-aws/" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Serverless SAR Flood-Extent API on AWS" />
+<meta name="twitter:description" content="The flood model deployed as a live serverless inference API on AWS, one cdk deploy." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+
+<link rel="stylesheet" href="/shared.css" />
+<style>
+  .paper { max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+  .paper-back { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; color: var(--ink-2); margin: 32px 0 24px; border-bottom: 1px solid transparent; transition: border-color .15s, color .15s; }
+  .paper-back:hover { color: var(--ink); border-color: var(--ink); }
+  .paper-eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent-text); margin-bottom: 16px; display: inline-flex; align-items: center; gap: 10px; }
+  .paper-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--accent); }
+  .paper-status { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; padding: 2px 10px; border-radius: 999px; background: var(--accent-4); color: var(--ink); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid var(--ink); }
+  .paper h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px); line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 24px; }
+  .paper-byline { font-family: var(--sans); font-size: 17px; color: var(--ink); margin-bottom: 4px; font-weight: 500; }
+  .paper-affil { font-family: var(--sans); font-size: 14px; color: var(--ink-2); margin-bottom: 4px; }
+  .paper-meta { font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 32px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); margin-bottom: 40px; }
+  .actions .btn { font-size: 12px; padding: 10px 18px; }
+  .paper h2 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin: 56px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+  .paper h2 .secnum { font-family: var(--mono); font-size: 13px; color: var(--accent-text); margin-right: 12px; letter-spacing: 0.08em; }
+  .paper h3 { font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink); margin: 32px 0 12px; }
+  .paper p { font-family: var(--sans); font-size: 16px; line-height: 1.7; color: var(--ink); margin-bottom: 18px; }
+  .paper p.lede { font-size: 17px; color: var(--ink); line-height: 1.65; }
+  .paper a { color: var(--accent-2-text); border-bottom: 1px solid var(--accent-2-text); }
+  .paper a:hover { color: var(--accent-text); border-color: var(--accent-text); }
+  .paper ul, .paper ol { font-family: var(--sans); font-size: 16px; line-height: 1.7; margin: 0 0 18px 22px; color: var(--ink); }
+  .paper li { margin-bottom: 6px; }
+  .abstract { background: var(--bg-2); border-left: 3px solid var(--accent); border-radius: 4px; padding: 24px 28px; margin: 0 0 40px; }
+  .abstract h2 { font-family: var(--mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-text); border-bottom: none; padding-bottom: 0; margin: 0 0 14px; }
+  .abstract p { font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+  .abstract p:last-child { margin-bottom: 0; }
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; margin: 0 0 40px; background: var(--bg-2); }
+  .facts > div { padding: 14px 18px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .facts > div:nth-child(2n) { border-right: 0; }
+  .facts > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .facts dt { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); margin-bottom: 4px; }
+  .facts dd { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink); }
+  .figure { margin: 32px 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--bg-2); }
+  .figure-img { display: block; width: 100%; height: auto; background: #ffffff; border-bottom: 1px solid var(--rule); }
+  .figure-caption { padding: 14px 22px; background: var(--bg-2); font-family: var(--sans); font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .figure-caption b { color: var(--ink); }
+  .results-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 14px; margin: 24px 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; }
+  .results-table thead { background: var(--bg-ink); color: var(--bg); }
+  .results-table th { padding: 12px 16px; text-align: left; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1.5px solid var(--ink); }
+  .results-table td { padding: 12px 16px; border-bottom: 1px solid var(--rule); color: var(--ink); }
+  .results-table tbody tr:last-child td { border-bottom: 0; }
+  .results-table tbody tr:nth-child(even) { background: var(--bg-3); }
+  .results-table .mono { font-family: var(--mono); font-size: 13px; }
+  .code { background: var(--bg-ink); border-radius: 8px; margin: 24px 0; overflow: hidden; border: 1px solid var(--ink); }
+  .code-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.1em; }
+  .code-head .filename { color: var(--accent-3); }
+  .code pre { font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: rgba(255,255,255,0.92); padding: 16px; overflow-x: auto; margin: 0; }
+  .paper-foot { margin-top: 80px; padding-top: 24px; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .paper-foot a { color: var(--ink); border-bottom: 1px solid var(--ink); }
+  @media (max-width: 720px) { .facts { grid-template-columns: 1fr; } .facts > div { border-right: 0; } }
+</style>
+</head>
+<body data-page="projects">
+<div id="nav-mount"></div>
+
+<main class="paper">
+
+  <a class="paper-back" href="/projects.html">&larr; Back to projects</a>
+
+  <div class="paper-eyebrow">
+    MLOps &middot; Infrastructure as code
+    <span class="paper-status">Shipped</span>
+  </div>
+
+  <h1>Serverless SAR Flood-Extent API on AWS.</h1>
+
+  <div class="paper-byline">Sylvester Arhin Mensah</div>
+  <div class="paper-affil">Department of Mathematics &amp; Statistics, Mississippi State University</div>
+  <div class="paper-meta">Live serverless inference, the whole stack from one cdk deploy</div>
+
+  <div class="actions">
+    <a class="btn coral" href="/projects/flood-demo.html">Try the live demo &rarr;</a>
+    <a class="btn primary" href="https://github.com/Governor6191/sar-flood-extent-aws" target="_blank" rel="noopener">Code on GitHub &rarr;</a>
+    <a class="btn ghost" href="https://github.com/Governor6191/sar-flood-extent-aws#what-it-does" target="_blank" rel="noopener">Live API and curl</a>
+  </div>
+
+  <section class="abstract">
+    <h2>Summary</h2>
+    <p>
+      The flood model from the segmentation pipeline, deployed as a live serverless inference API. You POST a Sentinel-1 scene and get back a flood mask and a GeoJSON of flood polygons. The inference can outrun API Gateway's 29 second limit, so the API is asynchronous: submit a job, poll for status, download the result from a presigned URL.
+    </p>
+    <p>
+      SageMaker Serverless Inference runs the model and scales to zero, so idle cost is zero. Everything is infrastructure as code: the whole stack comes up from a clean account with one cdk deploy and goes back to zero with cdk destroy.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">&#9733;</span> At a glance</h2>
+    <dl class="facts">
+      <div><dt>Pattern</dt><dd>Asynchronous serverless inference</dd></div>
+      <div><dt>Inference</dt><dd>AWS SageMaker Serverless, scales to zero</dd></div>
+      <div><dt>API</dt><dd>API Gateway REST, API key + per-day usage plan</dd></div>
+      <div><dt>State and storage</dt><dd>S3 inputs and outputs, DynamoDB job table</dd></div>
+      <div><dt>Infrastructure</dt><dd>AWS CDK in Python</dd></div>
+      <div><dt>CI/CD</dt><dd>GitHub Actions, OIDC, no long-lived keys</dd></div>
+      <div><dt>Region</dt><dd>us-east-1</dd></div>
+      <div><dt>Guardrails</dt><dd>AWS Budgets, S3 7-day lifecycle, concurrency cap</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2><span class="secnum">1</span> What it does</h2>
+    <p class="lede">
+      Research shows you can build the model. This shows you can ship it.
+    </p>
+    <p>
+      The caller uploads a Sentinel-1 scene to S3 through a presigned URL, then submits a job to a REST API protected by an API key and a per-day usage plan. A Lambda kicker writes job state to DynamoDB, reads the scene, invokes the SageMaker endpoint, writes the mask and GeoJSON back to S3, and returns presigned download URLs. The client polls until the job is done. The API reproduces the local inference mask bit for bit.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">2</span> Architecture</h2>
+    <figure class="figure">
+      <img class="figure-img" src="/assets/images/sar_flood_aws_architecture.png"
+           alt="Architecture diagram. A caller uploads a scene to S3 through a presigned URL, then submits a job to an API Gateway REST API protected by an API key and usage plan. A Lambda kicker writes job state to DynamoDB, reads the scene from S3, invokes a SageMaker serverless endpoint, writes the mask and GeoJSON back to S3, and returns presigned download URLs. CloudWatch monitors all of it."
+           width="784" height="416" loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Async serverless architecture.</b> API Gateway and a Lambda kicker front a SageMaker serverless endpoint. S3 holds inputs and outputs, DynamoDB tracks jobs, CloudWatch watches it. The whole thing is one CDK stack.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="secnum">3</span> Latency and cost</h2>
+    <table class="results-table">
+      <thead><tr><th>Measure</th><th>Value</th><th>Condition</th></tr></thead>
+      <tbody>
+        <tr><td>Latency, warm</td><td class="mono">1.2 s</td><td>Sentinel-1 crop, CPU endpoint</td></tr>
+        <tr><td>Latency, cold start</td><td class="mono">14 s</td><td>First request after scale to zero</td></tr>
+        <tr><td>Idle cost</td><td class="mono">$0 / month</td><td>Serverless, scales to zero</td></tr>
+        <tr><td>Per inference</td><td class="mono">&lt; 1 cent</td><td>At portfolio request volume</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Scaling to zero is the point: with nothing to serve, the stack costs nothing, and a cold start pays a one-time penalty to wake the endpoint. AWS Budgets alarms and an S3 seven-day lifecycle keep the running cost bounded and self-cleaning.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">4</span> Infrastructure as code and CI/CD</h2>
+    <p>
+      Everything is AWS CDK in Python. One command brings the stack up from a clean account, another takes it back to zero. GitHub Actions builds the container, pushes it to ECR, and redeploys on every push to main, authenticating to AWS with OIDC so there are no long-lived AWS keys in the repository.
+    </p>
+    <div class="code">
+      <div class="code-head"><span class="filename">deploy</span><span>AWS CDK (Python)</span></div>
+<pre>cdk deploy      # bring the whole stack up from a clean account
+cdk destroy     # take it back to zero</pre>
+    </div>
+  </section>
+
+  <section id="links">
+    <h2><span class="secnum">&rarr;</span> Try it</h2>
+    <ul>
+      <li>Live web demo: <a href="/projects/flood-demo.html">draw an area and run the model in the browser &rarr;</a></li>
+      <li>Repository: <a href="https://github.com/Governor6191/sar-flood-extent-aws" target="_blank" rel="noopener">github.com/Governor6191/sar-flood-extent-aws</a></li>
+      <li>The model it deploys: <a href="/projects/sar-flood/">Sentinel-1 SAR flood-extent pipeline &rarr;</a></li>
+    </ul>
+  </section>
+
+  <div class="paper-foot">
+    <a href="/projects.html">&larr; All projects</a>
+    <span>Shipped May 2026</span>
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+<script src="/chrome.js"></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Skin Lesion Classification with Calibrated Uncertainty · Sylvester Arhin Mensah</title>
+<meta name="description" content="A skin lesion classifier that reports calibrated uncertainty via Deep Ensembles. Benign vs malignant from ISIC dermoscopy, test AUROC 0.993 and ECE 0.017, with a live demo. One of two applications on a shared uncertainty framework." />
+<link rel="canonical" href="https://governor6191.github.io/projects/skin-lesion-uncertainty/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Skin Lesion Classification with Calibrated Uncertainty" />
+<meta property="og:description" content="Benign vs malignant from ISIC dermoscopy with calibrated uncertainty via Deep Ensembles. Test AUROC 0.993, ECE 0.017, live demo." />
+<meta property="og:url" content="https://governor6191.github.io/projects/skin-lesion-uncertainty/" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Skin Lesion Classification with Calibrated Uncertainty" />
+<meta name="twitter:description" content="Calibrated uncertainty for skin lesion classification. Test AUROC 0.993, ECE 0.017." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+
+<link rel="stylesheet" href="/shared.css" />
+<style>
+  .paper { max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+  .paper-back { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; color: var(--ink-2); margin: 32px 0 24px; border-bottom: 1px solid transparent; transition: border-color .15s, color .15s; }
+  .paper-back:hover { color: var(--ink); border-color: var(--ink); }
+  .paper-eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent-text); margin-bottom: 16px; display: inline-flex; align-items: center; gap: 10px; }
+  .paper-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--accent); }
+  .paper-status { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; padding: 2px 10px; border-radius: 999px; background: var(--accent-4); color: var(--ink); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid var(--ink); }
+  .paper h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px); line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 24px; }
+  .paper-byline { font-family: var(--sans); font-size: 17px; color: var(--ink); margin-bottom: 4px; font-weight: 500; }
+  .paper-affil { font-family: var(--sans); font-size: 14px; color: var(--ink-2); margin-bottom: 4px; }
+  .paper-meta { font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 32px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); margin-bottom: 40px; }
+  .actions .btn { font-size: 12px; padding: 10px 18px; }
+  .paper h2 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin: 56px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+  .paper h2 .secnum { font-family: var(--mono); font-size: 13px; color: var(--accent-text); margin-right: 12px; letter-spacing: 0.08em; }
+  .paper h3 { font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink); margin: 32px 0 12px; }
+  .paper p { font-family: var(--sans); font-size: 16px; line-height: 1.7; color: var(--ink); margin-bottom: 18px; }
+  .paper p.lede { font-size: 17px; color: var(--ink); line-height: 1.65; }
+  .paper a { color: var(--accent-2-text); border-bottom: 1px solid var(--accent-2-text); }
+  .paper a:hover { color: var(--accent-text); border-color: var(--accent-text); }
+  .paper ul, .paper ol { font-family: var(--sans); font-size: 16px; line-height: 1.7; margin: 0 0 18px 22px; color: var(--ink); }
+  .paper li { margin-bottom: 6px; }
+  .abstract { background: var(--bg-2); border-left: 3px solid var(--accent); border-radius: 4px; padding: 24px 28px; margin: 0 0 40px; }
+  .abstract h2 { font-family: var(--mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-text); border-bottom: none; padding-bottom: 0; margin: 0 0 14px; }
+  .abstract p { font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+  .abstract p:last-child { margin-bottom: 0; }
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; margin: 0 0 40px; background: var(--bg-2); }
+  .facts > div { padding: 14px 18px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .facts > div:nth-child(2n) { border-right: 0; }
+  .facts > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .facts dt { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); margin-bottom: 4px; }
+  .facts dd { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink); }
+  .figure { margin: 32px 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--bg-2); }
+  .figure-img { display: block; width: 100%; height: auto; background: #ffffff; border-bottom: 1px solid var(--rule); }
+  .figure-caption { padding: 14px 22px; background: var(--bg-2); font-family: var(--sans); font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .figure-caption b { color: var(--ink); }
+  .fig-pair { display: flex; flex-wrap: wrap; background: #fff; }
+  .fig-pair img { width: 50%; height: auto; display: block; background: #fff; border-bottom: 1px solid var(--rule); }
+  @media (max-width: 560px) { .fig-pair img { width: 100%; } }
+  .results-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 14px; margin: 24px 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; }
+  .results-table thead { background: var(--bg-ink); color: var(--bg); }
+  .results-table th { padding: 12px 16px; text-align: left; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1.5px solid var(--ink); }
+  .results-table td { padding: 12px 16px; border-bottom: 1px solid var(--rule); color: var(--ink); }
+  .results-table tbody tr:last-child td { border-bottom: 0; }
+  .results-table tbody tr:nth-child(even) { background: var(--bg-3); }
+  .results-table .mono { font-family: var(--mono); font-size: 13px; }
+  .results-table tr.best td { font-weight: 700; }
+  .code { background: var(--bg-ink); border-radius: 8px; margin: 24px 0; overflow: hidden; border: 1px solid var(--ink); }
+  .code-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.1em; }
+  .code-head .filename { color: var(--accent-3); }
+  .code pre { font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: rgba(255,255,255,0.92); padding: 16px; overflow-x: auto; margin: 0; }
+  .candor { margin: 32px 0; padding: 20px 24px; background: var(--bg-3); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+  .candor b { color: var(--ink); }
+  .paper-foot { margin-top: 80px; padding-top: 24px; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .paper-foot a { color: var(--ink); border-bottom: 1px solid var(--ink); }
+  @media (max-width: 720px) { .facts { grid-template-columns: 1fr; } .facts > div { border-right: 0; } }
+</style>
+</head>
+<body data-page="projects">
+<div id="nav-mount"></div>
+
+<main class="paper">
+
+  <a class="paper-back" href="/projects.html">&larr; Back to projects</a>
+
+  <div class="paper-eyebrow">
+    Computer vision &middot; Uncertainty
+    <span class="paper-status">Shipped</span>
+  </div>
+
+  <h1>Skin Lesion Classification with Calibrated Uncertainty.</h1>
+
+  <div class="paper-byline">Sylvester Arhin Mensah</div>
+  <div class="paper-affil">Department of Mathematics &amp; Statistics, Mississippi State University</div>
+  <div class="paper-meta">Application one of two on a shared uncertainty framework</div>
+
+  <div class="actions">
+    <a class="btn coral" href="https://huggingface.co/spaces/Governor6191/isic-skin-lesion-uncertainty" target="_blank" rel="noopener">Try the live demo &rarr;</a>
+    <a class="btn primary" href="https://github.com/Governor6191/medical-imaging-uncertainty" target="_blank" rel="noopener">Code on GitHub &rarr;</a>
+    <a class="btn ghost" href="https://huggingface.co/Governor6191/isic-skin-lesion-uncertainty" target="_blank" rel="noopener">Pretrained model</a>
+  </div>
+
+  <section class="abstract">
+    <h2>Summary</h2>
+    <p>
+      Benign or malignant from a dermoscopy image, with a calibrated confidence and a measure of how much the ensemble disagrees. Most medical-imaging repos report accuracy and stop. This one reports calibration next to accuracy for every model, because a model that says how sure it is matters more in a clinical setting than one that is only sometimes right and never says so.
+    </p>
+    <p>
+      The uncertainty method is Deep Ensembles. MC Dropout is included as a cheaper comparison, so the calibration claim is a measured head-to-head rather than a single method asserted on its own. This is the first of two applications on one shared framework, the second being brain tumor segmentation.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">&#9733;</span> At a glance</h2>
+    <dl class="facts">
+      <div><dt>Task</dt><dd>Binary benign vs malignant classification</dd></div>
+      <div><dt>Data</dt><dd>3000 balanced ISIC dermoscopy images</dd></div>
+      <div><dt>Model</dt><dd>ResNet-50 (timm) with a dropout head, 320 px</dd></div>
+      <div><dt>Uncertainty</dt><dd>Deep Ensemble (K=5), MC Dropout as a baseline</dd></div>
+      <div><dt>Discrimination</dt><dd>Test AUROC 0.993, accuracy 0.951</dd></div>
+      <div><dt>Calibration</dt><dd>Test ECE 0.017, NLL 0.118</dd></div>
+      <div><dt>Tools</dt><dd>PyTorch, timm, torchmetrics, Gradio</dd></div>
+      <div><dt>Release</dt><dd>Live Hugging Face Space + model</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2><span class="secnum">1</span> Why calibration is the point</h2>
+    <p class="lede">
+      A model that is only sometimes right and never says so is dangerous in a clinical setting. One that says how sure it is, is useful.
+    </p>
+    <p>
+      Accuracy alone hides overconfidence. A model can rank cases well and still attach 95 percent confidence to predictions that are right only 80 percent of the time. Calibration measures that gap. The whole framework here is built so that every model reports calibration (expected calibration error, negative log-likelihood, reliability diagrams) next to its accuracy, and so that a single model, a Deep Ensemble, and MC Dropout all run through one comparable path.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">2</span> Data and model</h2>
+    <p>
+      The data is 3000 dermoscopy images pulled from the ISIC Archive, balanced 1500 benign and 1500 malignant, split 70/15/15 into train, validation, and test with a seeded random stratified split so the three sets are drawn from the same distribution. The model is a ResNet-50 backbone (timm, ImageNet-pretrained) with an explicit dropout-and-linear head, trained at 320 pixels. The head dropout is a real module rather than functional dropout, so MC Dropout can switch it on at inference without disturbing batch norm. The Deep Ensemble is five members trained from different seeds.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">3</span> Results</h2>
+    <p>Held-out test set, 450 images.</p>
+    <table class="results-table">
+      <thead><tr><th>Method</th><th>Accuracy</th><th>AUROC</th><th>NLL</th><th>Brier</th><th>ECE</th></tr></thead>
+      <tbody>
+        <tr><td>Single model</td><td class="mono">0.942</td><td class="mono">0.990</td><td class="mono">0.165</td><td class="mono">0.084</td><td class="mono">0.027</td></tr>
+        <tr class="best"><td>Deep Ensemble (K=5)</td><td class="mono">0.951</td><td class="mono">0.993</td><td class="mono">0.118</td><td class="mono">0.070</td><td class="mono">0.017</td></tr>
+        <tr><td>MC Dropout</td><td class="mono">0.942</td><td class="mono">0.990</td><td class="mono">0.165</td><td class="mono">0.084</td><td class="mono">0.026</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The Deep Ensemble is better on every metric, and the calibration gains lead: it cuts NLL by 28 percent and ECE by 37 percent over the single model, while accuracy and AUROC are already near the ceiling on this data. A well-ranked model can still be overconfident, and ensembling is what fixes the confidence, not just the ordering.
+    </p>
+    <p>
+      MC Dropout barely moves off the single model. That is expected and worth stating plainly: dropout sits only in the classification head here, so the stochastic passes are nearly identical. Full weight diversity across independently trained members does far more than head-only dropout.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">4</span> Calibration</h2>
+    <p>
+      The reliability diagrams show the difference directly. Bars below the diagonal are overconfident bins, where accuracy lags confidence.
+    </p>
+    <figure class="figure">
+      <div class="fig-pair">
+        <img src="/assets/images/isic_single_reliability.png"
+             alt="Reliability diagram for the single model on the ISIC test set. The bars across mid and high confidence bins sit below the diagonal, indicating overconfidence, with a test expected calibration error of 0.027."
+             width="600" height="600" loading="lazy" />
+        <img src="/assets/images/isic_ensemble_reliability.png"
+             alt="Reliability diagram for the Deep Ensemble on the ISIC test set. The bars sit closer to the diagonal across the mid-confidence range than the single model, with a lower test expected calibration error of 0.017."
+             width="600" height="600" loading="lazy" />
+      </div>
+      <figcaption class="figure-caption">
+        <b>Reliability diagrams.</b> Left: single model, test ECE 0.027. Right: Deep Ensemble, test ECE 0.017. The ensemble's bars sit closer to the diagonal across the mid-confidence range.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="secnum">5</span> Worked examples</h2>
+    <p>
+      Calibrated uncertainty is only useful if the model tells you when to trust it. These are real test lesions: the top row is where the ensemble is confident and correct, the bottom row is the lesions where its members disagree most.
+    </p>
+    <figure class="figure">
+      <img class="figure-img" src="/assets/images/isic_worked_examples.png"
+           alt="Two rows of real dermoscopy test lesions. The top row shows cases where the five-member ensemble is confident and correct. The bottom row shows the lesions where the members disagree most: dark, irregular, pigmented lesions that are genuinely the harder cases. Each panel lists the true label, the ensemble prediction, the probability of malignant, and the epistemic uncertainty."
+           width="1560" height="845" loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Confident vs uncertain.</b> Each panel shows the true label, the ensemble prediction, the probability of malignant, and the epistemic uncertainty (how much the members disagree). The uncertain row is dark, irregular pigmented lesions, the genuinely harder cases.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="secnum">6</span> Honest scope</h2>
+    <div class="candor">
+      <b>Read the numbers in context.</b> This is a balanced 3000-image subset drawn from the earlier, well-curated part of the archive, so it is cleaner and easier than the full ISIC collection, and the high absolute AUROC reflects that, not clinical-grade performance. ISIC dermoscopy has known confounds (rulers, ink markings, dark vignetting) that a CNN can latch onto. These numbers are a calibration demonstration, not a diagnostic claim, and the live demo carries a research-tool-not-a-diagnosis disclaimer.
+    </div>
+  </section>
+
+  <section id="reproduce">
+    <h2><span class="secnum">&rarr;</span> Reproduce and links</h2>
+    <div class="code">
+      <div class="code-head"><span class="filename">train</span><span>medical-imaging-uncertainty</span></div>
+<pre>python scripts/download_isic.py --out data/isic --per-class 1500 --size full
+python scripts/train_ensemble.py --config configs/isic_resnet50.yaml --data-root data/isic</pre>
+    </div>
+    <p>
+      The second command trains the five members, then scores the single model, the Deep Ensemble, and MC Dropout on validation and test, writing a comparison file and the reliability diagrams per method.
+    </p>
+    <ul>
+      <li>Live demo: <a href="https://huggingface.co/spaces/Governor6191/isic-skin-lesion-uncertainty" target="_blank" rel="noopener">drop in a dermoscopy image and get a calibrated reading &rarr;</a></li>
+      <li>Repository: <a href="https://github.com/Governor6191/medical-imaging-uncertainty" target="_blank" rel="noopener">github.com/Governor6191/medical-imaging-uncertainty</a></li>
+      <li>Pretrained model: <a href="https://huggingface.co/Governor6191/isic-skin-lesion-uncertainty" target="_blank" rel="noopener">huggingface.co/Governor6191/isic-skin-lesion-uncertainty</a></li>
+      <li>The other half of the framework: <a href="/projects/brain-tumor-uncertainty/">Brain tumor segmentation with per-voxel uncertainty &rarr;</a></li>
+    </ul>
+  </section>
+
+  <div class="paper-foot">
+    <a href="/projects.html">&larr; All projects</a>
+    <span>Shipped June 2026</span>
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+<script src="/chrome.js"></script>
+</body>
+</html>

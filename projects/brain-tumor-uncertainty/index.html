@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Brain Tumor Segmentation with Per-Voxel Uncertainty · Sylvester Arhin Mensah</title>
+<meta name="description" content="A 2D-slice U-Net that segments brain tumors from multi-modal MRI and reports per-voxel uncertainty via Deep Ensembles. Trained on BraTS 2020, test Dice 0.828. The second application on a shared uncertainty framework." />
+<link rel="canonical" href="https://governor6191.github.io/projects/brain-tumor-uncertainty/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Brain Tumor Segmentation with Per-Voxel Uncertainty" />
+<meta property="og:description" content="Tumor masks from multi-modal MRI with per-voxel uncertainty via Deep Ensembles. Trained on BraTS 2020, test Dice 0.828." />
+<meta property="og:url" content="https://governor6191.github.io/projects/brain-tumor-uncertainty/" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Brain Tumor Segmentation with Per-Voxel Uncertainty" />
+<meta name="twitter:description" content="Per-voxel uncertainty for brain tumor segmentation. Trained on BraTS 2020, test Dice 0.828." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+
+<link rel="stylesheet" href="/shared.css" />
+<style>
+  .paper { max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+  .paper-back { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; color: var(--ink-2); margin: 32px 0 24px; border-bottom: 1px solid transparent; transition: border-color .15s, color .15s; }
+  .paper-back:hover { color: var(--ink); border-color: var(--ink); }
+  .paper-eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent-text); margin-bottom: 16px; display: inline-flex; align-items: center; gap: 10px; }
+  .paper-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--accent); }
+  .paper-status { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; padding: 2px 10px; border-radius: 999px; background: var(--accent-4); color: var(--ink); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid var(--ink); }
+  .paper h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px); line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 24px; }
+  .paper-byline { font-family: var(--sans); font-size: 17px; color: var(--ink); margin-bottom: 4px; font-weight: 500; }
+  .paper-affil { font-family: var(--sans); font-size: 14px; color: var(--ink-2); margin-bottom: 4px; }
+  .paper-meta { font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 32px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); margin-bottom: 40px; }
+  .actions .btn { font-size: 12px; padding: 10px 18px; }
+  .paper h2 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin: 56px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+  .paper h2 .secnum { font-family: var(--mono); font-size: 13px; color: var(--accent-text); margin-right: 12px; letter-spacing: 0.08em; }
+  .paper h3 { font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink); margin: 32px 0 12px; }
+  .paper p { font-family: var(--sans); font-size: 16px; line-height: 1.7; color: var(--ink); margin-bottom: 18px; }
+  .paper p.lede { font-size: 17px; color: var(--ink); line-height: 1.65; }
+  .paper a { color: var(--accent-2-text); border-bottom: 1px solid var(--accent-2-text); }
+  .paper a:hover { color: var(--accent-text); border-color: var(--accent-text); }
+  .paper ul, .paper ol { font-family: var(--sans); font-size: 16px; line-height: 1.7; margin: 0 0 18px 22px; color: var(--ink); }
+  .paper li { margin-bottom: 6px; }
+  .abstract { background: var(--bg-2); border-left: 3px solid var(--accent); border-radius: 4px; padding: 24px 28px; margin: 0 0 40px; }
+  .abstract h2 { font-family: var(--mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-text); border-bottom: none; padding-bottom: 0; margin: 0 0 14px; }
+  .abstract p { font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+  .abstract p:last-child { margin-bottom: 0; }
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; margin: 0 0 40px; background: var(--bg-2); }
+  .facts > div { padding: 14px 18px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .facts > div:nth-child(2n) { border-right: 0; }
+  .facts > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .facts dt { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); margin-bottom: 4px; }
+  .facts dd { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink); }
+  .figure { margin: 32px 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--bg-2); }
+  .figure-img { display: block; width: 100%; height: auto; background: #ffffff; border-bottom: 1px solid var(--rule); }
+  .figure-caption { padding: 14px 22px; background: var(--bg-2); font-family: var(--sans); font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .figure-caption b { color: var(--ink); }
+  .results-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 14px; margin: 24px 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; }
+  .results-table thead { background: var(--bg-ink); color: var(--bg); }
+  .results-table th { padding: 12px 16px; text-align: left; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1.5px solid var(--ink); }
+  .results-table td { padding: 12px 16px; border-bottom: 1px solid var(--rule); color: var(--ink); }
+  .results-table tbody tr:last-child td { border-bottom: 0; }
+  .results-table tbody tr:nth-child(even) { background: var(--bg-3); }
+  .results-table .mono { font-family: var(--mono); font-size: 13px; }
+  .results-table tr.best td { font-weight: 700; }
+  .code { background: var(--bg-ink); border-radius: 8px; margin: 24px 0; overflow: hidden; border: 1px solid var(--ink); }
+  .code-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.1em; }
+  .code-head .filename { color: var(--accent-3); }
+  .code pre { font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: rgba(255,255,255,0.92); padding: 16px; overflow-x: auto; margin: 0; }
+  .candor { margin: 32px 0; padding: 20px 24px; background: var(--bg-3); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+  .candor b { color: var(--ink); }
+  .paper-foot { margin-top: 80px; padding-top: 24px; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .paper-foot a { color: var(--ink); border-bottom: 1px solid var(--ink); }
+  @media (max-width: 720px) { .facts { grid-template-columns: 1fr; } .facts > div { border-right: 0; } }
+</style>
+</head>
+<body data-page="projects">
+<div id="nav-mount"></div>
+
+<main class="paper">
+
+  <a class="paper-back" href="/projects.html">&larr; Back to projects</a>
+
+  <div class="paper-eyebrow">
+    Medical segmentation &middot; Uncertainty
+    <span class="paper-status">Shipped</span>
+  </div>
+
+  <h1>Brain Tumor Segmentation with Per-Voxel Uncertainty.</h1>
+
+  <div class="paper-byline">Sylvester Arhin Mensah</div>
+  <div class="paper-affil">Department of Mathematics &amp; Statistics, Mississippi State University</div>
+  <div class="paper-meta">Application two of two on a shared uncertainty framework</div>
+
+  <div class="actions">
+    <a class="btn primary" href="https://github.com/Governor6191/medical-imaging-uncertainty" target="_blank" rel="noopener">Code on GitHub &rarr;</a>
+    <a class="btn ghost" href="/projects/skin-lesion-uncertainty/">The skin-lesion classifier &rarr;</a>
+  </div>
+
+  <section class="abstract">
+    <h2>Summary</h2>
+    <p>
+      Dense per-voxel tumor segmentation from multi-modal MRI, with an uncertainty value on every voxel. This is the second application on the same framework as the skin lesion classifier, and the proof that the shared core is genuinely reusable: the same uncertainty engine, the same calibration suite (now scored per voxel), and the same training harness. Only the model differs.
+    </p>
+    <p>
+      A Deep Ensemble of 2D-slice U-Nets reads the four MRI modalities and labels every voxel. The per-voxel uncertainty concentrates exactly where the label is genuinely ambiguous: along the tumor boundary and through the heterogeneous core.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">&#9733;</span> At a glance</h2>
+    <dl class="facts">
+      <div><dt>Task</dt><dd>Per-voxel tumor segmentation, four classes</dd></div>
+      <div><dt>Data</dt><dd>BraTS 2020, 368 patients, 24,354 tumor slices</dd></div>
+      <div><dt>Model</dt><dd>2D-slice U-Net, ResNet-34 encoder</dd></div>
+      <div><dt>Input</dt><dd>Four co-registered MRI modalities</dd></div>
+      <div><dt>Uncertainty</dt><dd>Deep Ensemble (K=3), scored per voxel</dd></div>
+      <div><dt>Overlap</dt><dd>Test Dice 0.828, IoU 0.708</dd></div>
+      <div><dt>Calibration</dt><dd>Test ECE 0.0044, NLL 0.032 per voxel</dd></div>
+      <div><dt>Tools</dt><dd>PyTorch, segmentation_models_pytorch, NIfTI</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2><span class="secnum">1</span> Same core, different head</h2>
+    <p class="lede">
+      The classifier and the segmenter are two task modules on one framework, not two separate projects.
+    </p>
+    <p>
+      The uncertainty engine, the calibration suite, and the training harness are shared. Only the model differs: a 2D-slice U-Net from segmentation_models_pytorch with a ResNet-34 encoder, four modalities in and four classes out (background plus the three tumor subregions). As with the classifier, a single model is still an ensemble of one, so every method flows through the same comparable path. Nothing in the uncertainty, calibration, training, or evaluation code knows whether it is scoring a classifier or a segmenter.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">2</span> Data</h2>
+    <p>
+      BraTS 2020: 369 patients, each with four co-registered MRI volumes (T1, T1ce, T2, FLAIR) and an expert segmentation. One case is dropped for a misnamed segmentation file, leaving 368. Volumes are z-scored per modality over the brain, and the tumor-bearing axial slices, 24,354 of them, are extracted once to a fast on-disk cache so training is GPU-bound rather than reloading 80 MB volumes on every access. The split is patient-level, so no patient's slices leak across train, validation, and test.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">3</span> Results</h2>
+    <p>Held-out test split, about 3,560 tumor slices, 178 million voxels.</p>
+    <table class="results-table">
+      <thead><tr><th>Method</th><th>Dice</th><th>IoU</th><th>Voxel acc</th><th>NLL</th><th>Brier</th><th>ECE</th></tr></thead>
+      <tbody>
+        <tr><td>Single model</td><td class="mono">0.822</td><td class="mono">0.700</td><td class="mono">0.9926</td><td class="mono">0.040</td><td class="mono">0.0131</td><td class="mono">0.0059</td></tr>
+        <tr class="best"><td>Deep Ensemble (K=3)</td><td class="mono">0.828</td><td class="mono">0.708</td><td class="mono">0.9929</td><td class="mono">0.032</td><td class="mono">0.0116</td><td class="mono">0.0044</td></tr>
+      </tbody>
+    </table>
+    <p>
+      Same story as the classifier, now for dense prediction. The Deep Ensemble is better on every metric and the calibration gains lead: it cuts per-voxel NLL by 19 percent and ECE by 25 percent over the single model, while nudging Dice and IoU up. Ensembling sharpens where the model is unsure more than it moves where the mask lands.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">4</span> Per-voxel uncertainty</h2>
+    <p>
+      The headline figure is the test slice the ensemble found hardest, drawn as four panels: the FLAIR MRI, the predicted tumor mask, the ground truth, and the per-voxel epistemic uncertainty (how much the three members disagree).
+    </p>
+    <figure class="figure">
+      <img class="figure-img" src="/assets/images/brats_uncertainty.png"
+           alt="Four panels across one brain MRI slice that the ensemble found hardest. Panel 1: the FLAIR MRI input. Panel 2: the model predicted tumor mask. Panel 3: the expert ground-truth mask. Panel 4: the per-voxel uncertainty map, bright along the tumor boundary and through the heterogeneous core and dark in healthy tissue."
+           width="1920" height="480" loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Per-voxel uncertainty.</b> FLAIR input, prediction, ground truth, and the uncertainty map. The uncertainty concentrates along the tumor boundary and through the heterogeneous core, exactly where the label is genuinely ambiguous, and falls to near zero in confident healthy tissue. That is what calibrated segmentation uncertainty should look like: the model flags the voxels a radiologist would also linger on.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="secnum">5</span> Honest scope</h2>
+    <div class="candor">
+      <b>Read the numbers in context.</b> This is a 2D-slice model, so the Dice is not directly comparable to the 3D BraTS leaderboard, which scores whole volumes on the nested whole-tumor, tumor-core, and enhancing-tumor regions. The numbers above are the mean Dice and IoU over the three raw tumor subclasses, with background excluded. Training and evaluation use tumor-bearing slices only, so this measures segmentation quality given that a tumor is present, not whole-volume screening for whether one is. Voxel accuracy looks near-perfect because background dominates the voxel count. Research model, not a cleared diagnostic tool.
+    </div>
+  </section>
+
+  <section id="reproduce">
+    <h2><span class="secnum">&rarr;</span> Reproduce and links</h2>
+    <div class="code">
+      <div class="code-head"><span class="filename">train</span><span>medical-imaging-uncertainty</span></div>
+<pre>python scripts/prepare_brats.py --data-root /path/to/BraTS2020_TrainingData --out data/brats2020_slices --file-ext .nii
+python scripts/train_brats.py --config configs/brats_unet.yaml --cache-dir data/brats2020_slices</pre>
+    </div>
+    <p>
+      The first command builds the slice cache once. The second trains the three members, then scores the single model and the Deep Ensemble per voxel on validation and test and writes the uncertainty figure.
+    </p>
+    <ul>
+      <li>Repository: <a href="https://github.com/Governor6191/medical-imaging-uncertainty" target="_blank" rel="noopener">github.com/Governor6191/medical-imaging-uncertainty</a></li>
+      <li>The other half of the framework: <a href="/projects/skin-lesion-uncertainty/">Skin lesion classification with calibrated uncertainty &rarr;</a></li>
+    </ul>
+  </section>
+
+  <div class="paper-foot">
+    <a href="/projects.html">&larr; All projects</a>
+    <span>Shipped June 2026</span>
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+<script src="/chrome.js"></script>
+</body>
+</html>

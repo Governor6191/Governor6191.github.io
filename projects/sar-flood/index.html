@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sentinel-1 SAR Flood-Extent Pipeline · Sylvester Arhin Mensah</title>
+<meta name="description" content="A deep-learning segmentation pipeline that maps flood extent from Sentinel-1 radar. Trained on Sen1Floods11 (water IoU 0.67), validated on Hurricane Harvey over Houston against Copernicus EMS." />
+<link rel="canonical" href="https://governor6191.github.io/projects/sar-flood/" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Sylvester Arhin Mensah" />
+<meta property="og:title" content="Sentinel-1 SAR Flood-Extent Pipeline" />
+<meta property="og:description" content="Flood-extent segmentation from radar. Trained on Sen1Floods11, validated on Hurricane Harvey 2017 over Houston." />
+<meta property="og:url" content="https://governor6191.github.io/projects/sar-flood/" />
+<meta property="og:image" content="https://governor6191.github.io/og/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="720" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Sentinel-1 SAR Flood-Extent Pipeline" />
+<meta name="twitter:description" content="Flood-extent segmentation from radar. Trained on Sen1Floods11, validated on Hurricane Harvey." />
+<meta name="twitter:image" content="https://governor6191.github.io/og/og-image.png" />
+
+<link rel="stylesheet" href="/shared.css" />
+<style>
+  /* Project detail page. arXiv-style landing, mirrors the research detail template. */
+  .paper { max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+  .paper-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-2);
+    margin: 32px 0 24px; border-bottom: 1px solid transparent;
+    transition: border-color .15s, color .15s;
+  }
+  .paper-back:hover { color: var(--ink); border-color: var(--ink); }
+  .paper-eyebrow {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent-text);
+    margin-bottom: 16px; display: inline-flex; align-items: center; gap: 10px;
+  }
+  .paper-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--accent); }
+  .paper-status {
+    display: inline-flex; align-items: center; gap: 8px; margin-left: 12px;
+    padding: 2px 10px; border-radius: 999px; background: var(--accent-4); color: var(--ink);
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; border: 1px solid var(--ink);
+  }
+  .paper h1 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 24px;
+  }
+  .paper-byline { font-family: var(--sans); font-size: 17px; color: var(--ink); margin-bottom: 4px; font-weight: 500; }
+  .paper-affil { font-family: var(--sans); font-size: 14px; color: var(--ink-2); margin-bottom: 4px; }
+  .paper-meta { font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 32px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); margin-bottom: 40px; }
+  .actions .btn { font-size: 12px; padding: 10px 18px; }
+  .paper h2 {
+    font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--ink); margin: 56px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+  }
+  .paper h2 .secnum { font-family: var(--mono); font-size: 13px; color: var(--accent-text); margin-right: 12px; letter-spacing: 0.08em; }
+  .paper h3 { font-family: var(--sans); font-weight: 600; font-size: 18px; color: var(--ink); margin: 32px 0 12px; }
+  .paper p { font-family: var(--sans); font-size: 16px; line-height: 1.7; color: var(--ink); margin-bottom: 18px; }
+  .paper p.lede { font-size: 17px; color: var(--ink); line-height: 1.65; }
+  .paper a { color: var(--accent-2-text); border-bottom: 1px solid var(--accent-2-text); }
+  .paper a:hover { color: var(--accent-text); border-color: var(--accent-text); }
+  .paper ul, .paper ol { font-family: var(--sans); font-size: 16px; line-height: 1.7; margin: 0 0 18px 22px; color: var(--ink); }
+  .paper li { margin-bottom: 6px; }
+  .abstract { background: var(--bg-2); border-left: 3px solid var(--accent); border-radius: 4px; padding: 24px 28px; margin: 0 0 40px; }
+  .abstract h2 { font-family: var(--mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-text); border-bottom: none; padding-bottom: 0; margin: 0 0 14px; }
+  .abstract p { font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+  .abstract p:last-child { margin-bottom: 0; }
+  .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; margin: 0 0 40px; background: var(--bg-2); }
+  .facts > div { padding: 14px 18px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .facts > div:nth-child(2n) { border-right: 0; }
+  .facts > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .facts dt { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); margin-bottom: 4px; }
+  .facts dd { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink); }
+  .figure { margin: 32px 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--bg-2); }
+  .figure-img { display: block; width: 100%; height: auto; background: #ffffff; border-bottom: 1px solid var(--rule); }
+  .figure-caption { padding: 14px 22px; background: var(--bg-2); font-family: var(--sans); font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .figure-caption b { color: var(--ink); }
+  .results-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 14px; margin: 24px 0; border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; }
+  .results-table thead { background: var(--bg-ink); color: var(--bg); }
+  .results-table th { padding: 12px 16px; text-align: left; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1.5px solid var(--ink); }
+  .results-table td { padding: 12px 16px; border-bottom: 1px solid var(--rule); color: var(--ink); }
+  .results-table tbody tr:last-child td { border-bottom: 0; }
+  .results-table tbody tr:nth-child(even) { background: var(--bg-3); }
+  .results-table .mono { font-family: var(--mono); font-size: 13px; }
+  .candor { margin: 32px 0; padding: 20px 24px; background: var(--bg-3); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+  .candor b { color: var(--ink); }
+  .paper-foot { margin-top: 80px; padding-top: 24px; border-top: 2px solid var(--ink); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .paper-foot a { color: var(--ink); border-bottom: 1px solid var(--ink); }
+  @media (max-width: 720px) { .facts { grid-template-columns: 1fr; } .facts > div { border-right: 0; } }
+</style>
+</head>
+<body data-page="projects">
+<div id="nav-mount"></div>
+
+<main class="paper">
+
+  <a class="paper-back" href="/projects.html">&larr; Back to projects</a>
+
+  <div class="paper-eyebrow">
+    Computer vision &middot; Remote sensing
+    <span class="paper-status">Shipped</span>
+  </div>
+
+  <h1>Sentinel-1 SAR Flood-Extent Pipeline.</h1>
+
+  <div class="paper-byline">Sylvester Arhin Mensah</div>
+  <div class="paper-affil">Department of Mathematics &amp; Statistics, Mississippi State University</div>
+  <div class="paper-meta">Open data, benchmark to a real US hurricane, end to end</div>
+
+  <div class="actions">
+    <a class="btn primary" href="https://github.com/Governor6191/sar-flood-extent" target="_blank" rel="noopener">Code on GitHub &rarr;</a>
+    <a class="btn" href="https://huggingface.co/Governor6191/sar-flood-extent-unet-resnet34" target="_blank" rel="noopener">Pretrained model (Hugging Face)</a>
+    <a class="btn ghost" href="https://github.com/Governor6191/sar-flood-extent#real-disaster-validation" target="_blank" rel="noopener">Harvey validation write-up</a>
+  </div>
+
+  <section class="abstract">
+    <h2>Summary</h2>
+    <p>
+      A deep-learning segmentation pipeline that maps flood extent from radar imagery. A U-Net with a ResNet-34 encoder reads Sentinel-1 SAR (VV and VH at 10 m) and outputs binary flood masks. Radar sees through cloud and works at night, so it is the data source you can actually use during an active disaster, when storm cover blocks the optical satellites.
+    </p>
+    <p>
+      The model is trained and benchmarked on Sen1Floods11, then pointed at a real US hurricane it never saw during training. The benchmark number says it generalizes across regions. The Harvey number says what happens on a live disaster, and the gap between the two is real and explained rather than hidden.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">&#9733;</span> At a glance</h2>
+    <dl class="facts">
+      <div><dt>Task</dt><dd>Binary flood-extent segmentation</dd></div>
+      <div><dt>Input</dt><dd>Sentinel-1 SAR, VV + VH at 10 m</dd></div>
+      <div><dt>Model</dt><dd>U-Net with a ResNet-34 encoder</dd></div>
+      <div><dt>Training data</dt><dd>Sen1Floods11, hand-labeled split</dd></div>
+      <div><dt>Benchmark</dt><dd>Water-class IoU 0.67, F1 0.80</dd></div>
+      <div><dt>Validation</dt><dd>Hurricane Harvey 2017, flood-only IoU 0.12</dd></div>
+      <div><dt>Tools</dt><dd>PyTorch, segmentation_models_pytorch, rasterio, Earth Engine</dd></div>
+      <div><dt>Release</dt><dd>Public repo + model on the Hugging Face Hub</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2><span class="secnum">1</span> Why radar</h2>
+    <p class="lede">
+      During a hurricane, the optical satellites are blind. The storm is exactly the cloud cover that stops them.
+    </p>
+    <p>
+      Synthetic-aperture radar does not care about cloud or daylight. It measures backscatter, and calm open water is a near-mirror that reflects the signal away from the sensor, so flooded ground shows up dark. That is the property the model learns. The input is the two Sentinel-1 polarizations, VV and VH, at 10 m resolution. The output is a per-pixel flood mask.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">2</span> Benchmark on Sen1Floods11</h2>
+    <p>
+      Trained and evaluated on the Sen1Floods11 hand-labeled split, the model reaches a water-class IoU of 0.67 and F1 of 0.80 on the held-out test regions. The point of the benchmark is generalization: the test scenes span eleven regions the model is scored on without seeing them during training.
+    </p>
+    <figure class="figure">
+      <img class="figure-img" src="/assets/images/test_predictions.png"
+           alt="Six Sen1Floods11 test scenes in a grid. Each row shows the Sentinel-1 VV input, the hand-labeled ground-truth flood mask in blue, and the model prediction in red. The model captures clear river and floodplain water and leaves dry scenes blank."
+           width="1451" height="2885" loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Sen1Floods11 test set.</b> VV input, ground truth (blue), and prediction (red) on six held-out scenes the model never saw during training. This is the 0.67 IoU at work.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="secnum">3</span> Real-disaster validation: Hurricane Harvey</h2>
+    <p>
+      A benchmark number is not the same as a number on a real event. The model is pointed at the Sentinel-1 scene over Houston on August 30 2017, during Hurricane Harvey, and scored against the Copernicus EMS observed flood delineation for the same area, with JRC permanent water removed from both sides so only storm flooding counts.
+    </p>
+    <figure class="figure">
+      <img class="figure-img" src="/assets/images/harvey_validation.png"
+           alt="Four-panel Hurricane Harvey validation over Houston. Panel 1: Sentinel-1 VV radar input. Panel 2: model predicted flood extent in red. Panel 3: Copernicus EMS observed flood in blue. Panel 4: agreement map with permanent water removed, green for true positives, red for false positives, blue for false negatives."
+           width="1677" height="1374" loading="lazy" />
+      <figcaption class="figure-caption">
+        <b>Hurricane Harvey, Houston, August 30 2017.</b> Sentinel-1 VV input, model prediction (red), Copernicus EMS observed flood (blue), and the agreement map with permanent water removed.
+      </figcaption>
+    </figure>
+
+    <table class="results-table">
+      <thead><tr><th>Setting</th><th>IoU</th><th>F1</th></tr></thead>
+      <tbody>
+        <tr><td>Sen1Floods11 benchmark, all-hand test, water class</td><td class="mono">0.67</td><td class="mono">0.80</td></tr>
+        <tr><td>Hurricane Harvey 2017, Houston, flood-only</td><td class="mono">0.12</td><td class="mono">0.22</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      Both numbers matter. The gap is real and it is explained: most of the Copernicus reference is flooded vegetation and flooded urban land, which stays bright in radar, and the model only finds water by its dark backscatter. Open-water flood is the part SAR does well. Urban flood from C-band radar alone is not, and the number says so. Honest reporting beats a curated number.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="secnum">4</span> Why this target</h2>
+    <div class="candor">
+      <b>Why Harvey.</b> Sentinel-1 launched in 2014, so the validation target had to be a post-2014 US disaster with full radar coverage. Hurricane Harvey over Houston in 2017 fits, and the pipeline runs on open data from the benchmark to a real US Gulf Coast disaster, end to end.
+    </div>
+  </section>
+
+  <section id="code">
+    <h2><span class="secnum">&rarr;</span> Code and model</h2>
+    <p>
+      The full pipeline, from Sentinel-1 access through training, inference, and the Harvey scoring, is public. The trained weights are released on the Hugging Face Hub with a model card.
+    </p>
+    <ul>
+      <li>Repository: <a href="https://github.com/Governor6191/sar-flood-extent" target="_blank" rel="noopener">github.com/Governor6191/sar-flood-extent</a></li>
+      <li>Pretrained model: <a href="https://huggingface.co/Governor6191/sar-flood-extent-unet-resnet34" target="_blank" rel="noopener">huggingface.co/Governor6191/sar-flood-extent-unet-resnet34</a></li>
+      <li>This model is deployed as a live serverless API: <a href="/projects/sar-flood-aws/">Serverless SAR flood-extent API on AWS &rarr;</a></li>
+    </ul>
+  </section>
+
+  <div class="paper-foot">
+    <a href="/projects.html">&larr; All projects</a>
+    <span>Shipped May 2026</span>
+  </div>
+
+</main>
+
+<div id="foot-mount"></div>
+<script src="/chrome.js"></script>
+</body>
+</html>
